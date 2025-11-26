@@ -1,0 +1,47 @@
+% ==========================================
+%   eng_cover.tex - 英文封面绘制
+% ==========================================
+% 所有变量已在 scut.cls 中统一定义，这里只负责绘制
+
+% 绘制英文封面
+\newcommand{\makeengcover}{
+    \clearpage
+    \thispagestyle{empty} % 无页眉页脚
+    \begin{center}
+        \linespread{1.3}\selectfont % 稍微拉大行距
+        \rmfamily % 强制使用衬线字体 (Times New Roman)
+        
+        % 1. 顶部留白
+        \vspace*{3cm}
+        
+        % 2. 英文题目 (Bold, Large)
+        
+        % \zihao{2} 对应约 22pt，加粗
+        {\bfseries\zihao{-2} \scut@etitle \par}
+        
+        \vspace{2cm} % 题目与声明之间的间距
+        
+        % 3. 学位声明
+        {\zihao{4} A Dissertation Submitted for the Degree of \scut@edegree \par}
+        
+        \vspace{3cm} % 声明与个人信息之间的间距
+        
+        % 4. 个人信息块 (居中显示，内部左对齐)
+        \zihao{-3}\bfseries
+        \renewcommand{\arraystretch}{1.4}
+        \begin{tabular}{rl} % r: 标签右对齐(靠近冒号), l: 内容左对齐
+            Candidate: & \scut@eauthor \\
+            Supervisor: & \scut@esupervisor \\
+        \end{tabular}
+
+        \vspace{4.5cm} 
+        
+        % 5. 底部校名与地点
+        \zihao{-3}\mdseries
+        {South China University of Technology \par}
+        \vspace{0.5em}
+        {Guangzhou, China \par}
+        
+        \vspace{2cm} % 底部留白
+    \end{center}
+}

@@ -1,0 +1,43 @@
+\documentclass{scut}
+
+% 导入论文信息配置
+\input{info}
+
+% \includeonly{chapters/chapter1}
+
+
+\begin{document}
+
+    \makecover
+    \makeengcover
+    \maketitlepage
+    \makedeclaration 
+
+    \frontmatter
+    \pagestyle{plain}
+    \pagenumbering{Roman} % Roman style page number
+    \ctexset{chapter/afterskip=0.5\baselineskip}
+    \include{chapters/abstract} 
+    \ctexset{chapter/afterskip=\baselineskip}
+
+    \maketableofcontents
+
+    \mainmatter
+    \ctexset{chapter/pagestyle=scutstyle} 
+    \zihao{-4} % 正文小四号字体
+    \include{chapters/chapter1}
+    \include{chapters/chapter2}
+    \include{chapters/chapter3} 
+    \include{chapters/chapter4}
+
+    % --- 结尾部分 (Back Matter) ---
+    % 包含：参考文献、致谢、附录
+    \backmatter
+    \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+    \include{back/conclusion}
+    % 参考文献
+    \printbibliography[heading=bibintoc]
+    \include{back/pub}
+    \include{back/thanks}
+
+\end{document}
