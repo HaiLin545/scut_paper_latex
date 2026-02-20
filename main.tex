@@ -3,7 +3,7 @@
 % 导入论文信息配置
 \input{info}
 
-% \includeonly{chapters/chapter1}
+% \includeonly{chapters/chapter3}
 
 
 \begin{document}
@@ -17,7 +17,7 @@
     \pagestyle{plain}
     \pagenumbering{Roman} % Roman style page number
     \ctexset{chapter/afterskip=0.5\baselineskip}
-    \include{chapters/abstract} 
+    \include{main/abstract} 
     \ctexset{chapter/afterskip=\baselineskip}
 
     \maketableofcontents
@@ -25,19 +25,20 @@
     \mainmatter
     \ctexset{chapter/pagestyle=scutstyle} 
     \zihao{-4} % 正文小四号字体
-    \include{chapters/chapter1}
-    \include{chapters/chapter2}
-    \include{chapters/chapter3} 
-    \include{chapters/chapter4}
+    \include{main/chapter1/chapter1}
+    \include{main/chapter2/chapter2}
+    \include{main/chapter3/chapter3} 
+    \include{main/chapter4/chapter4}
+    \include{main/chapter5/chapter5}
 
     % --- 结尾部分 (Back Matter) ---
     % 包含：参考文献、致谢、附录
     \backmatter
     \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
-    \include{back/conclusion}
+    \include{main/_back/conclusion}
     % 参考文献
     \printbibliography[heading=bibintoc]
-    \include{back/pub}
-    \include{back/thanks}
+    \include{main/_back/pub}
+    \include{main/_back/thanks}
 
 \end{document}

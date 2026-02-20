@@ -1,5 +1,5 @@
 {
-    "latex-workshop.latex.outDir": "./output/",
+    "latex-workshop.latex.outDir": "./tmp/",
     "latex-workshop.latex.recipe.default": "latexmk (xelatex)",
     "latex-workshop.intellisense.citation.backend": "biblatex",
 }

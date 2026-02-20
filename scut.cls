@@ -41,6 +41,9 @@
 % \linespread{1.5}
 % \onehalfspacing
 \setstretch{1.63} 
+\setlength{\parskip}{0pt} % 段落间额外间距设为0
+\setlength{\abovedisplayskip}{0.5\baselineskip}
+\setlength{\belowdisplayskip}{0.5\baselineskip}
 
 % 标题样式设置
 \ctexset{
@@ -132,14 +135,14 @@
 \newcommand{\members}[1]{\def\scut@members{#1}}
 
 % 封面
-\input{front/scut_cover}
-\input{front/eng_cover}
-\input{front/scut_titlepage}
+\input{main/_front/scut_cover}
+\input{main/_front/eng_cover}
+\input{main/_front/scut_titlepage}
 
 % 原创性声明
 \newcommand{\makedeclaration}{
     \clearpage
-    \includepdf[pages=-, pagecommand={\thispagestyle{empty}}]{front/原创性声明.pdf}
+    \includepdf[pages=-, pagecommand={\thispagestyle{empty}}]{main/_front/原创性声明.pdf}
 }
 
 % 目录
@@ -166,4 +169,4 @@
 % 参考文献
 \renewcommand*{\bibfont}{\zihao{5}\songti\setstretch{1.5}}
 \setlength{\bibitemsep}{3pt} % 条目间垂直间距，单位pt/mm/em
-\addbibresource{back/ref.bib}
+\addbibresource{main/_back/ref.bib}
