@@ -1,0 +1,16 @@
+\begin{table}[t]
+    \centering
+    \caption{等边正则化权重 $\lambda_t$ 的敏感性分析}
+    \label{tab:lambda}
+    \setlength{\tabcolsep}{8pt}
+    \begin{tabular}{lccc}
+        \toprule
+        $\lambda_t$ & PSNR$\uparrow$ & SSIM$\uparrow$ & Normal$\downarrow$ \\
+        \midrule
+        0 & 27.32 & 0.977 & 1.93 \\
+        0.005 & 28.01 & 0.979 & 1.79 \\
+        \textbf{0.01（本章方法）} & \textbf{28.13} & \textbf{0.981} & \textbf{1.74} \\
+        0.02 & 27.98 & 0.975 & 1.75 \\
+        \bottomrule
+    \end{tabular}
+\end{table}

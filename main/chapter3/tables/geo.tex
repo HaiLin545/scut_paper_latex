@@ -1,0 +1,27 @@
+\begin{table}[t]
+	\centering
+	\caption{PeopleSnapshot和X-Avatar数据集上的几何精度比较}
+	\label{tab:geo}
+	
+	\setlength{\tabcolsep}{9pt}
+	\begin{tabular}{l *{1}{cccc}}
+		\toprule
+		\multirow{2}{*}{\textbf{方法}}            &
+		\multicolumn{1}{c}{\textbf{PeopleSnapshot}} & \multicolumn{3}{c}{\textbf{X-Avatar}}                                                     \\
+		\cmidrule(lr){2-2} \cmidrule(lr){3-5}       &
+		Normal$\downarrow$ & Normal$\downarrow$  & CD$\downarrow$ & P2S$\downarrow$                  \\
+		
+		\midrule
+		
+		GART
+		& 4.263        & 3.531          & 0.141           & 0.154          \\
+		GomAvatar
+		& 3.876        & 3.344          & 0.155           & 0.169          \\
+		IHuman
+		& 2.055        & 2.056          & 0.132           & 0.126          \\
+		\midrule
+		\textbf{本章方法}
+		& \textbf{1.687}  & \textbf{1.772} & \textbf{0.111}  & \textbf{0.107} \\
+		\bottomrule
+	\end{tabular}
+\end{table}

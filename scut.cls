@@ -8,8 +8,17 @@
 % 依赖声明
 \RequirePackage{geometry}
 \RequirePackage{amsmath, amssymb} % 数学公式
+\RequirePackage{algorithm}        % 算法环境
+\RequirePackage{algorithmic}      % 算法伪代码
+\RequirePackage{xcolor}           % 颜色支持
+\floatname{algorithm}{算法}
+\renewcommand{\algorithmicrequire}{\textbf{输入：}}
+\renewcommand{\algorithmicensure}{\textbf{输出：}}
 \RequirePackage{graphicx}         % 图片支持
+\RequirePackage{caption}          % 图表标题格式
+\RequirePackage{placeins}          % 提供 \FloatBarrier 命令
 \RequirePackage{booktabs}         % 三线表
+\RequirePackage{multirow}         % 跨行表格
 \RequirePackage{tabularx}        % 自适应宽度表格 (用于封面标题)
 \RequirePackage{ragged2e}        % 提供 \justifying 命令用于分散对齐
 \RequirePackage{fontspec}
@@ -31,8 +40,8 @@
 
 % 字体设置
 \setmainfont{Times New Roman}
-\setCJKmainfont{SimSun}       % 宋体文件
-\setCJKfamilyfont{zhsong}{SimSun}
+\setCJKmainfont{SimSun}[AutoFakeBold=5]
+\setCJKfamilyfont{zhsong}{SimSun}[AutoFakeBold=5]
 
 
 % \setCJKfamilyfont{zhhei}{SimHei}
@@ -42,8 +51,36 @@
 % \onehalfspacing
 \setstretch{1.63} 
 \setlength{\parskip}{0pt} % 段落间额外间距设为0
-\setlength{\abovedisplayskip}{0.5\baselineskip}
-\setlength{\belowdisplayskip}{0.5\baselineskip}
+
+% 放宽浮动体放置参数，避免图表被推迟到章末
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.70}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.60}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+% 缩小浮动体与正文之间的间距
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+% 图表标题格式："图 x-y 内容"（无冒号，编号用短横线，五号字，紧凑间距）
+\captionsetup{labelsep=space, font=small, aboveskip=4pt, belowskip=2pt}
+\renewcommand{\thefigure}{\thechapter-\arabic{figure}}
+\renewcommand{\thetable}{\thechapter-\arabic{table}}
+
+% 公式编号格式：(x-y)
+\renewcommand{\theequation}{\thechapter-\arabic{equation}}
+\renewcommand{\thealgorithm}{\thechapter-\arabic{algorithm}}
+
+% 公式上下间距（通过 \everydisplay 确保不被字号切换覆盖）
+\everydisplay\expandafter{%
+  \the\everydisplay
+  \abovedisplayskip=10pt
+  \belowdisplayskip=10pt
+}
 
 % 标题样式设置
 \ctexset{

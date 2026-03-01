@@ -1,0 +1,20 @@
+\begin{table}[t]
+    \centering
+    \caption{姿态噪声鲁棒性压力测试}
+    \label{tab:noise}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{l|cc|cc|cc|cc}
+        \toprule
+        \multirow{2}{*}{噪声强度 $\sigma$}
+        & \multicolumn{4}{c|}{PSNR$\uparrow$}
+        & \multicolumn{4}{c}{Normal ($\times 10^{-3}$)$\downarrow$} \\
+        \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+        & 本章方法 & $\Delta$ & IHuman & $\Delta$ & 本章方法 & $\Delta$ & IHuman & $\Delta$ \\
+        \midrule
+        0     & 28.92 & --              & 26.66 & --              & 1.88 & --               & 2.04 & --               \\
+        0.005 & 27.02 & \textbf{-6.6\%} & 23.75 & -10.9\%         & 2.01 & \textbf{+6.9\%}  & 2.53 & +24.0\%          \\
+        0.01  & 25.72 & \textbf{-11.1\%} & 22.54 & -15.5\%        & 2.47 & \textbf{+31.4\%} & 3.13 & +54.4\%          \\
+        0.02  & 23.81 & \textbf{-17.7\%} & 20.69 & -22.4\%        & 3.88 & \textbf{+106.4\%} & 4.56 & +138.2\%        \\
+        \bottomrule
+    \end{tabular}}
+\end{table}

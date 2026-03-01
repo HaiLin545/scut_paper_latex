@@ -1,0 +1,23 @@
+\begin{table}[t]
+	\centering
+	\caption{X-Avatar数据集（序列00019）上的定量消融实验结果}
+	\label{tab:ablation}
+	\setlength{\tabcolsep}{12pt}
+	\begin{tabular}{lccc|cc}
+		\toprule
+		设置
+		& PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$ & Normal$\downarrow$ & CD$\downarrow$ \\
+		\midrule
+		去除面片高斯
+		& 26.89  & 0.9721  & 0.0189   & 2.143    & 0.128      \\
+		
+		去除顶点高斯
+		& 25.67   & 0.9654 & 0.0231  & 2.687  & 0.145      \\
+		
+		去除等边正则化 & 27.83    & 0.9798 & 0.0142   & 1.834    & 0.115   \\
+		
+		完整模型
+		& \textbf{28.11} & \textbf{0.9813}  & \textbf{0.0135} & \textbf{1.772}  & \textbf{0.111} \\
+		\bottomrule
+	\end{tabular}
+\end{table}

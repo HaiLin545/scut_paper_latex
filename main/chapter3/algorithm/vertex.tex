@@ -1,0 +1,22 @@
+
+\begin{algorithm}[t]
+    \caption{顶点高斯属性的解析推导}
+    \label{alg:vertex_gaussian}
+    \textbf{输入}：姿态顶点 $\mathbf{v}^p \in \mathbb{R}^3$，邻接面片集合 $\mathcal{N}$，一环邻域 $\mathcal{N}_1$\\
+    \textbf{超参数}：$\gamma = 0.5$，$\epsilon = 10^{-3}$\\
+    \textbf{输出}：$\boldsymbol{\mu}_v \in \mathbb{R}^3$，$\mathbf{R}_v \in SO(3)$，$\mathbf{s}_v \in \mathbb{R}^3$\\
+    \begin{algorithmic}[1]
+        \STATE \textcolor{gray}{// 位置：锚定于顶点}
+        \STATE $\boldsymbol{\mu}_v \leftarrow \mathbf{v}^p$
+        \STATE \textcolor{gray}{// 旋转：面积加权法向 + 稳定正交基}
+        \STATE $\mathbf{n}_v \leftarrow \text{normalize}(\sum_{f \in \mathcal{N}} A_f \mathbf{n}_f)$
+        \STATE $\mathbf{r} \leftarrow \arg\min_{\mathbf{u} \in \{\mathbf{e}_x, \mathbf{e}_y, \mathbf{e}_z\}} |\mathbf{u}^\top \mathbf{n}_v|$
+        \STATE $\mathbf{t}_1 \leftarrow \text{normalize}(\mathbf{r} \times \mathbf{n}_v)$
+        \STATE $\mathbf{t}_2 \leftarrow \mathbf{n}_v \times \mathbf{t}_1$
+        \STATE $\mathbf{R}_v \leftarrow [\mathbf{t}_1, \mathbf{t}_2, \mathbf{n}_v]$
+        \STATE \textcolor{gray}{// 缩放：绑定最短邻域边长}
+        \STATE $d_{\min} \leftarrow \min_{\mathbf{v}_k \in \mathcal{N}_1} \|\mathbf{v}_k^p - \mathbf{v}^p\|$
+        \STATE $\mathbf{s}_v \leftarrow (\gamma \cdot d_{\min},\; \gamma \cdot d_{\min},\; \epsilon)$
+        \STATE \textbf{return} $\boldsymbol{\mu}_v,\; \mathbf{R}_v,\; \mathbf{s}_v$
+    \end{algorithmic}
+\end{algorithm}

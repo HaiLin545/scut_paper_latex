@@ -1,0 +1,23 @@
+\begin{algorithm}[t]
+    \caption{面片高斯属性的解析推导}
+    \label{alg:face_gaussian}
+    \textbf{输入}：姿态网格面片顶点 $\mathbf{p}_1, \mathbf{p}_2, \mathbf{p}_3 \in \mathbb{R}^3$\\
+    \textbf{超参数}：$\beta = 0.5$，$\epsilon = 10^{-3}$\\
+    \textbf{输出}：$\boldsymbol{\mu}_f \in \mathbb{R}^3$，$\mathbf{R}_f \in SO(3)$，$\mathbf{s}_f \in \mathbb{R}^3$\\
+    \begin{algorithmic}[1]
+        \STATE \textcolor{gray}{// 计算对边长度}
+        \STATE $l_1 \leftarrow \|\mathbf{p}_2 - \mathbf{p}_3\|$，$l_2 \leftarrow \|\mathbf{p}_3 - \mathbf{p}_1\|$，$l_3 \leftarrow \|\mathbf{p}_1 - \mathbf{p}_2\|$
+        \STATE \textcolor{gray}{// 位置：边长加权内心}
+        \STATE $\boldsymbol{\mu}_f \leftarrow (l_1 \mathbf{p}_1 + l_2 \mathbf{p}_2 + l_3 \mathbf{p}_3) / (l_1 + l_2 + l_3)$
+        \STATE \textcolor{gray}{// 旋转：构建局部正交坐标系}
+        \STATE $\mathbf{n}_f \leftarrow \text{normalize}((\mathbf{p}_2 - \mathbf{p}_1) \times (\mathbf{p}_3 - \mathbf{p}_1))$
+        \STATE $\mathbf{t}_1 \leftarrow \text{normalize}(\mathbf{p}_2 - \mathbf{p}_1)$
+        \STATE $\mathbf{t}_2 \leftarrow \mathbf{n}_f \times \mathbf{t}_1$
+        \STATE $\mathbf{R}_f \leftarrow [\mathbf{t}_1, \mathbf{t}_2, \mathbf{n}_f]$
+        \STATE \textcolor{gray}{// 缩放：绑定内切圆半径}
+        \STATE $A \leftarrow \frac{1}{2}\|(\mathbf{p}_2 - \mathbf{p}_1) \times (\mathbf{p}_3 - \mathbf{p}_1)\|$
+        \STATE $r \leftarrow A / ((l_1 + l_2 + l_3) / 2)$
+        \STATE $\mathbf{s}_f \leftarrow (\beta \cdot r,\; \beta \cdot r,\; \epsilon)$
+        \STATE \textbf{return} $\boldsymbol{\mu}_f,\; \mathbf{R}_f,\; \mathbf{s}_f$
+    \end{algorithmic}
+\end{algorithm}

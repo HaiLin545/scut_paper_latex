@@ -1,0 +1,42 @@
+\begin{table}[t]
+	\centering
+	\caption{X-Avatar数据集上的定量比较结果}
+	\label{tab:xavatar}
+	\resizebox{\textwidth}{!}{%
+	\begin{tabular}{l *{4}{ccc}}
+		\toprule
+		\multirow{2}{*}{\textbf{方法}}   &
+		\multicolumn{3}{c}{\textbf{00016}} &
+		\multicolumn{3}{c}{\textbf{00017}} &
+		\multicolumn{3}{c}{\textbf{00018}} &
+		\multicolumn{3}{c}{\textbf{00019}}                                                            \\
+		\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13}
+		& PSNR$\uparrow$ & SSIM$\uparrow$  & LPIPS$\downarrow$ 
+		& PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$ 
+		& PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$ 
+		& PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$  \\
+		\midrule
+		IHuman
+		& 27.34          & 0.9560            & 0.0311
+		& 23.75          & 0.9453            & 0.0356
+		& 25.17          & 0.9688            & 0.0259
+		& 27.00          & 0.9742            & 0.0203              \\
+		GomAvatar
+		& 28.86          & 0.9594            & 0.0222
+		& 24.87          & 0.9527            & \textbf{0.0225}
+		& 26.77          & 0.9743            & 0.0187
+		& 27.86          & 0.9772            & 0.0140              \\
+		GART
+		& 28.08          & 0.9615            & 0.0278
+		& \textbf{25.24} & 0.9560            & 0.0296
+		& 25.69          & 0.9720            & 0.0235
+		& 25.66          & 0.9692            & 0.0250              \\
+		\midrule
+		\textbf{本章方法}
+		& \textbf{29.03} & \textbf{0.9705}   & \textbf{0.0247}
+		& \textbf{25.24} & \textbf{0.9614}   & \underline{0.0250}
+		& \textbf{26.82} & \textbf{0.9784}   & \textbf{0.0174}
+		& \textbf{28.11} & \textbf{0.9813}   & \textbf{0.0135}     \\
+		\bottomrule
+	\end{tabular}}
+\end{table}
