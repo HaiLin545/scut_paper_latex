@@ -1,0 +1,43 @@
+\begin{figure}[ht]
+\centering
+\begin{minipage}[t]{0.47\linewidth}
+\begin{minted}[frame=lines, framesep=3mm, fontsize=\footnotesize, linenos=false]{yaml}
+design:
+  meta:         # 上身服装类型
+    upper:
+      v: Shirt
+      range: [FittedShirt, Shirt, null]
+      type: select_null
+    wb:         # 腰带类型
+      v: null
+      range: [StraightWB, FittedWB, null]
+      type: select_null
+    bottom:     # 下身服装类型
+      v: null
+      range: [Skirt2, Pants, SkirtCircle, null]
+      type: select_null
+\end{minted}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.47\linewidth}
+\begin{minted}[frame=lines, framesep=3mm, fontsize=\footnotesize, linenos=false]{yaml}
+  shirt:      
+    length:
+      v: 1.2    # 相对腰线长
+      range: [0.5, 3.5]
+      type: float
+  sleeve:
+    length:
+      v: 0.3    # 相对臂长
+      range: [0.1, 1.15]
+      type: float
+  waistband: 
+    width:
+      v: 0.2    # 相对臀围线高
+  # ...（完整文件约886行）
+\end{minted}
+\end{minipage}
+
+\caption{GarmentCode设计参数 $\mathbf{d}$ 的YAML格式示例（节选）}
+\label{fig:ch4-design-param}
+\end{figure}

@@ -1,0 +1,22 @@
+% 表：不同服装类别上的连续参数MAE分类对比
+% TODO: 替换为实际实验数据
+\begin{table}[t]
+    \centering
+    \caption{不同服装类别上的连续参数MAE对比}
+    \label{tab:ch4-comparison-category}
+    \setlength{\tabcolsep}{7pt}
+    \begin{tabular}{lcccccc}
+        \toprule
+        \multirow{2}{*}{\textbf{方法}}
+        & \multicolumn{5}{c}{\textbf{连续参数MAE}$\downarrow$}
+        & \multirow{2}{*}{\textbf{平均}} \\
+        \cmidrule(lr){2-6}
+        & T恤 & 衬衫 & 连衣裙 & 裤装 & 裙装 & \\
+        \midrule
+        Design2GarmentCode
+        & 0.105 & 0.118 & 0.142 & 0.131 & 0.147 & 0.128 \\
+        本章方法
+        & \textbf{0.058} & \textbf{0.065} & \textbf{0.079} & \textbf{0.072} & \textbf{0.081} & \textbf{0.071} \\
+        \bottomrule
+    \end{tabular}
+\end{table}

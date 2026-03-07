@@ -11,6 +11,7 @@
 \RequirePackage{algorithm}        % 算法环境
 \RequirePackage{algorithmic}      % 算法伪代码
 \RequirePackage{xcolor}           % 颜色支持
+\RequirePackage{minted}           % 代码高亮
 \floatname{algorithm}{算法}
 \renewcommand{\algorithmicrequire}{\textbf{输入：}}
 \renewcommand{\algorithmicensure}{\textbf{输出：}}
@@ -207,3 +208,4 @@
 \renewcommand*{\bibfont}{\zihao{5}\songti\setstretch{1.5}}
 \setlength{\bibitemsep}{3pt} % 条目间垂直间距，单位pt/mm/em
 \addbibresource{main/_back/ref.bib}
+\addbibresource{main/_back/ref2.bib}

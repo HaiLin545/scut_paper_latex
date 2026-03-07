@@ -1,0 +1,24 @@
+% 表：消融实验结果
+% TODO: 替换为实际实验数据
+\begin{table}[t]
+    \centering
+    \caption{消融实验定量结果}
+    \label{tab:ch4-ablation}
+    \setlength{\tabcolsep}{6pt}
+    \begin{tabular}{lccccc}
+        \toprule
+        \textbf{实验设置}
+        & \textbf{分类准确率}$\uparrow$ & \textbf{连续参数MAE}$\downarrow$ & \textbf{尺寸参数MAE}$\downarrow$ & \textbf{结构合法率}$\uparrow$ & \textbf{成功率}$\uparrow$ \\
+        \midrule
+        去除身体测量先验
+        & 86.7\% & 0.109 & 0.149 & 95.0\% & 91.7\% \\
+        使用原生格式
+        & 84.2\% & 0.093 & 0.082 & 62.5\% & 58.3\% \\
+        简化提示规则
+        & 85.0\% & 0.088 & 0.075 & 78.3\% & 73.3\% \\
+        \midrule
+        完整模型（本章方法）
+        & \textbf{87.5\%} & \textbf{0.071} & \textbf{0.058} & \textbf{95.8\%} & \textbf{93.3\%} \\
+        \bottomrule
+    \end{tabular}
+\end{table}

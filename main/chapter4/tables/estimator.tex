@@ -1,0 +1,19 @@
+% 表：不同SMPL估计器对生成质量的影响
+% TODO: 替换为实际实验数据
+\begin{table}[t]
+    \centering
+    \caption{不同SMPL估计器对服装参数生成质量的影响}
+    \label{tab:ch4-estimator}
+    \setlength{\tabcolsep}{10pt}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{SMPL估计器}
+        & \textbf{连续参数MAE}$\downarrow$ & \textbf{尺寸参数MAE}$\downarrow$ & \textbf{结构合法率}$\uparrow$ & \textbf{成功率}$\uparrow$ \\
+        \midrule
+        ROMP
+        & \textbf{0.071} & \textbf{0.058} & \textbf{95.8\%} & \textbf{93.3\%} \\
+        HybrIK
+        & 0.074 & 0.062 & 95.8\% & 92.5\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
