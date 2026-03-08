@@ -2,31 +2,31 @@
 \chapter[摘要]{摘\quad 要} 
 \setlength{\parindent}{2em}
 
-随着元宇宙、虚拟现实及数字娱乐产业的飞速发展，构建高保真、可驱动且具备结构化语义的数字化身已成为计算机视觉与图形学领域的研究热点。然而，穿衣数字化身的重建与生成仍面临严峻挑战：一方面，现有的外观重建技术难以在大幅度运动下保持几何拓扑的稳定性；另一方面，现有的服装生成方法缺乏对人体形态的精确感知，导致生成的服装结构难以适配特定体型。针对上述挑战，本文以“显式几何先验”为核心线索，从外观重建和结构生成两个维度展开研究，主要创新成果如下：
+随着元宇宙、虚拟现实及数字娱乐产业的飞速发展，构建高保真、可驱动且具备结构化语义的数字化身已成为计算机视觉与图形学领域的研究热点。然而，穿衣数字化身的重建与生成仍面临两大瓶颈：其一，现有基于三维高斯泼溅的人体重建方法中，高斯基元的旋转与尺度属性通过自由优化获得，与底层网格拓扑解耦，导致在分布外姿态驱动时出现表面破碎与伪影；其二，现有参数化服装生成方法缺乏对人体几何形态的显式感知，生成的服装版型难以适配特定体型，且严重依赖大规模训练数据。针对上述问题，本文以"显式几何先验"为核心线索，开展以下研究工作：
 
-针对现有基于 3D 高斯泼溅（3D Gaussian Splatting, 3DGS）的重建方法在分布外（Out-of-Distribution, OOD）姿态下容易产生表面破碎和伪影的问题，本文提出了一种几何驱动的生成范式。该方法摒弃了传统的高斯属性自由优化策略，转而利用底层可变形网格的拓扑几何先验，通过解析计算直接推导高斯的尺度、旋转和位置属性，实现了高斯基元与网格表面的严格绑定。此外，本文设计了等边几何正则化项以维持网格质量。实验表明，该方法在大幅度运动驱动下显著提升了数字化身的视觉保真度与几何鲁棒性，有效解决了动态重建中的“视觉层”一致性问题。
+针对 3D 高斯泼溅人体重建在新姿态下的几何失真问题，本文提出了一种拓扑感知的三维高斯人体重建方法。该方法利用可变形网格的拓扑结构，设计了面片高斯与顶点高斯两类互补基元，分别以三角面片内切圆和网格顶点为锚点，所有几何属性均从网格拓扑解析推导，从根本上消除了高斯与表面的脱耦问题；同时引入等边几何正则化以维护网格质量。在 PeopleSnapshot 与 X-Avatar 数据集上的实验表明，相较于最优基线，该方法将法向误差降低了 13.8\%--17.9\%，倒角距离降低了 15.9\%，模型体积缩减 44.5\%。
 
-针对现有端到端生成模型忽视人体尺寸约束、导致版型不合身且难以编辑的缺陷，本文提出了一种基于人体测量先验的免训练生成框架。该框架利用三维人体重建技术提取精确的身体几何特征，结合视觉语言模型（VLM）对服装款式的相对语义推理，通过几何映射引擎自动合成适配目标体型的版型参数。该方法不仅实现了服装的“结构层”解析，还赋予了数字化身可编辑与物理仿真的能力。
+针对现有服装参数生成方法忽视人体尺寸约束且依赖大规模训练的缺陷，本文提出了一种基于人体几何先验的服装参数生成方法。该方法首先将量体工具适配至 SMPL 拓扑以从单张图像提取人体测量值作为几何先验，继而通过信息分流策略将参数格式压缩至紧凑表示以降低超过 90\% 的 Token 消耗，最终通过几何锚点归一化与分步推理工作流引导 GPT-4o 以零样本方式完成多模态参数推理。在 CLoSe 与 4D-DRESS 数据集上的实验表明，该方法分别取得 1.621 cm 和 1.834 cm 的倒角距离，较最优基线降低 19.5\% 和 6.2\%，推理速度提升约 4 倍，且无需训练数据，结构有效率达 100\%。
 
-综上所述，本文通过引入不同层级的几何先验，分别解决了数字化身在动态外观渲染中的伪影问题和静态结构生成中的体型失配问题。研究成果打通了从表面视觉重建到底层参数化生成的关键技术路径，为构建高质量、可交互的数字化身提供了有效的理论依据与技术支撑。
+综上所述，本文通过引入不同层级的几何先验，分别解决了数字化身在动态外观渲染中的几何失真问题和参数化服装生成中的体型失配问题，为构建高质量、可交互的穿衣数字化身提供了有效的技术支撑。
 
 \par \vspace{1em} % 空一行
-\noindent \textbf{关键词：}数字化身重建；3D 高斯泼溅；服装版型生成；几何先验
+\noindent \textbf{关键词：}数字化身重建；3D 高斯泼溅；参数化服装生成；几何先验
 
 
 % 英文摘要
 \chapter[Abstract]{Abstract}
-\setlength{\parindent}{0em} % 英文摘要通常首行不缩进，段落间空行；若学校有格式要求可改为 2em
+% \setlength{\parindent}{0em} % 英文摘要通常首行不缩进，段落间空行；若学校有格式要求可改为 2em
 
-With the rapid development of the Metaverse, virtual reality, and digital entertainment industries, constructing high-fidelity, drivable, and semantically structured digital avatars has become a research hotspot in computer vision and graphics. However, the reconstruction and generation of clothed digital avatars face severe challenges. On one hand, existing appearance reconstruction techniques struggle to maintain geometric topology stability under large-scale motions. On the other hand, current garment generation methods lack precise perception of human body shape, leading to generated garment structures that fail to fit specific body types. Addressing these challenges, this thesis takes "explicit geometric priors" as the core thread, conducting research from two dimensions: appearance reconstruction and structure generation. The main innovative contributions are as follows:
+With the rapid development of the Metaverse, virtual reality, and digital entertainment industries, constructing high-fidelity, drivable, and semantically structured digital avatars has become a research hotspot in computer vision and graphics. However, the reconstruction and generation of clothed digital avatars still face two key bottlenecks: first, in existing 3D Gaussian Splatting-based human reconstruction methods, the rotation and scale attributes of Gaussian primitives are freely optimized and decoupled from the underlying mesh topology, causing surface collapse and artifacts under out-of-distribution poses; second, existing parametric garment generation methods lack explicit perception of human body geometry, resulting in ill-fitting garment patterns and heavy reliance on large-scale training data. To address these issues, this thesis takes ``explicit geometric priors'' as the core thread and conducts research from two dimensions: appearance reconstruction and structure generation. The main contributions are as follows:
 
-Aiming at the problem that existing reconstruction methods based on 3D Gaussian Splatting (3DGS) are prone to surface collapse and artifacts under Out-of-Distribution (OOD) poses, this thesis proposes a geometry-driven generation paradigm. This method discards the traditional free optimization strategy of Gaussian attributes and instead utilizes the topological geometric priors of the underlying deformable mesh. By analytically deriving the scale, rotation, and position attributes of Gaussians, it achieves strict binding between Gaussian primitives and the mesh surface. Furthermore, an equilateral geometric regularization term is designed to maintain mesh quality. Experiments demonstrate that this method significantly improves the visual fidelity and geometric robustness of digital avatars under large-scale motion driving, effectively solving the "visual layer" consistency problem in dynamic reconstruction.
+To address geometric distortion in 3D Gaussian Splatting-based human reconstruction under novel poses, this thesis proposes a topology-aware 3D Gaussian human reconstruction method. The method designs two complementary Gaussian primitive types---face Gaussians and vertex Gaussians---anchored at triangle incircles and mesh vertices respectively, with all geometric attributes analytically derived from mesh topology, fundamentally eliminating the decoupling between Gaussians and the surface; an equilateral geometric regularization term is further introduced to maintain mesh quality. Experiments on PeopleSnapshot and X-Avatar show that, compared to the best baseline, the method reduces normal error by 13.8\%--17.9\% and Chamfer distance by 15.9\%, with 44.5\% smaller model size.
 
-Addressing the defects of existing end-to-end generation models that ignore human measurement constraints, resulting in ill-fitting patterns and difficulty in editing, this thesis proposes a training-free generation framework based on body measurement priors. This framework utilizes 3D human body reconstruction technology to extract precise body geometric features. Combined with the relative semantic reasoning of garment styles by Vision-Language Models (VLM), it automatically synthesizes pattern parameters adapted to the target body type through a geometric mapping engine. This method not only realizes the "structural layer" parsing of garments but also endows digital avatars with editability and physical simulation capabilities.
+To address the deficiencies of existing garment parameter generation methods that neglect body size constraints and rely on large-scale training, this thesis proposes a body-geometry-prior-guided garment parameter generation method. The method first adapts a body measurement tool to SMPL topology to extract anatomical measurements as geometric priors from a single image, then compresses the parameter format into a compact representation via an information routing strategy to reduce token consumption by over 90\%, and finally guides GPT-4o to perform zero-shot multimodal parameter reasoning through geometric anchor normalization and a step-by-step workflow. Experiments on CLoSe and 4D-DRESS show that the method achieves Chamfer distances of 1.621\,cm and 1.834\,cm respectively, outperforming the best baselines by 19.5\% and 6.2\%, with approximately 4$\times$ faster inference, no training data required, and a 100\% structural validity rate.
 
-In summary, by introducing geometric priors at different levels, this thesis solves the artifact problem in dynamic appearance rendering and the body mismatch problem in static structure generation of digital avatars, respectively. The research results pave a key technical path from surface visual reconstruction to underlying parametric generation, providing effective theoretical basis and technical support for building high-quality and interactive digital avatars.
+In summary, by introducing geometric priors at different levels, this thesis addresses both the geometric distortion problem in dynamic appearance rendering and the body mismatch problem in parametric garment generation for digital avatars, providing effective technical support for building high-quality and interactive clothed digital avatars.
 
 \par \vspace{1em}
-\noindent \textbf{Keywords:} Digital Avatar Reconstruction; 3D Gaussian Splatting; Garment Pattern Generation; Geometric Priors
+\noindent \textbf{Keywords:} Digital Avatar Reconstruction; 3D Gaussian Splatting; Parametric Garment Generation; Geometric Priors
 
 \setlength{\parindent}{2em} 

@@ -1,19 +1,23 @@
-% 表：本章方法与Design2GarmentCode的定量对比
-% TODO: 替换为实际实验数据
+% 表：本章方法与对比方法在公开数据集上的定量对比
+% TODO: 替换占位值为实际实验数据
 \begin{table}[t]
     \centering
-    \caption{本章方法与Design2GarmentCode在合成参考集上的定量对比}
+    \caption{本章方法与对比方法在公开数据集上的定量对比}
     \label{tab:ch4-comparison}
-    \setlength{\tabcolsep}{8pt}
+    \setlength{\tabcolsep}{7pt}
     \begin{tabular}{lccccc}
         \toprule
         \textbf{方法}
-        & \textbf{分类准确率}$\uparrow$ & \textbf{连续参数MAE}$\downarrow$ & \textbf{尺寸参数MAE}$\downarrow$ & \textbf{结构合法率}$\uparrow$ & \textbf{成功率}$\uparrow$ \\
+        & \textbf{Meta Acc.}$\uparrow$ & \textbf{CD (cm)}$\downarrow$ & \textbf{F-Score}$\uparrow$ & \textbf{SSR}$\uparrow$ & \textbf{Val. Rate}$\uparrow$ \\
         \midrule
-        Design2GarmentCode
-        & 83.2\% & 0.128 & 0.163 & \textbf{97.5\%} & 89.2\% \\
+        SewFormer\cite{liu2023sewformer}
+        & X.X\% & X.XX & X.XX & X.X\% & — \\
+        ChatGarment\cite{bian2024chatgarment}
+        & X.X\% & X.XX & X.XX & X.X\% & — \\
+        D2GC\cite{zhou2025design2garmentcode}
+        & X.X\% & X.XX & X.XX & X.X\% & X.X\% \\
         本章方法
-        & \textbf{87.5\%} & \textbf{0.071} & \textbf{0.058} & 95.8\% & \textbf{93.3\%} \\
+        & \textbf{X.X\%} & \textbf{X.XX} & \textbf{X.XX} & \textbf{X.X\%} & \textbf{X.X\%} \\
         \bottomrule
     \end{tabular}
 \end{table}

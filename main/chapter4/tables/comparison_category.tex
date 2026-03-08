@@ -1,22 +1,49 @@
-% 表：不同服装类别上的连续参数MAE分类对比
-% TODO: 替换为实际实验数据
+% 表：CLoSe数据集上的定量对比
 \begin{table}[t]
     \centering
-    \caption{不同服装类别上的连续参数MAE对比}
-    \label{tab:ch4-comparison-category}
-    \setlength{\tabcolsep}{7pt}
-    \begin{tabular}{lcccccc}
+    \caption{CLoSe数据集上的定量对比}
+    \label{tab:ch4-comparison-close}
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{lccccc}
         \toprule
-        \multirow{2}{*}{\textbf{方法}}
-        & \multicolumn{5}{c}{\textbf{连续参数MAE}$\downarrow$}
-        & \multirow{2}{*}{\textbf{平均}} \\
-        \cmidrule(lr){2-6}
-        & T恤 & 衬衫 & 连衣裙 & 裤装 & 裙装 & \\
+        \textbf{方法}
+        & \textbf{分类准确率}$\uparrow$ & \textbf{结构合法率}$\uparrow$
+        & \textbf{倒角距离 (cm)}$\downarrow$ & \textbf{F-Score}$\uparrow$
+        & \textbf{仿真成功率}$\uparrow$ \\
         \midrule
-        Design2GarmentCode
-        & 0.105 & 0.118 & 0.142 & 0.131 & 0.147 & 0.128 \\
+        SewFormer\cite{liu2023sewformer}
+        & — & — & 7.157 & 0.789 & 82.3\% \\
+        ChatGarment\cite{bian2024chatgarment}
+        & 84.4\% & — & 2.382 & 0.821 & 94.5\% \\
+        D2GC\cite{zhou2025design2garmentcode}
+        & 89.6\% & 96.6\% & 2.013 & 0.833 & 95.8\% \\
         本章方法
-        & \textbf{0.058} & \textbf{0.065} & \textbf{0.079} & \textbf{0.072} & \textbf{0.081} & \textbf{0.071} \\
+        & \textbf{94.2\%} & \textbf{100\%} & \textbf{1.621} & \textbf{0.896} & \textbf{98.4\%} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+% 表：4D-DRESS数据集上的定量对比
+\begin{table}[t]
+    \centering
+    \caption{4D-DRESS数据集上的定量对比}
+    \label{tab:ch4-comparison-4ddress}
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{lccccc}
+        \toprule
+        \textbf{方法}
+        & \textbf{分类准确率}$\uparrow$ & \textbf{结构合法率}$\uparrow$
+        & \textbf{倒角距离 (cm)}$\downarrow$ & \textbf{F-Score}$\uparrow$
+        & \textbf{仿真成功率}$\uparrow$ \\
+        \midrule
+        SewFormer\cite{liu2023sewformer}
+        & — & — & 6.089 & 0.796 & 73.5\% \\
+        ChatGarment\cite{bian2024chatgarment}
+        & 86.5\% & — & 1.956 & 0.847 & 92.8\% \\
+        D2GC\cite{zhou2025design2garmentcode}
+        & 89.1\% & 98.2\% & 2.241 & 0.805 & 93.2\% \\
+        本章方法
+        & \textbf{93.1\%} & \textbf{100\%} & \textbf{1.834} & \textbf{0.881} & \textbf{98.2\%} \\
         \bottomrule
     \end{tabular}
 \end{table}

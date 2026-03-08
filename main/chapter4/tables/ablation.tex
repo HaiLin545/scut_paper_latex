@@ -1,24 +1,21 @@
 % 表：消融实验结果
-% TODO: 替换为实际实验数据
-\begin{table}[t]
+\begin{table}[h]
     \centering
-    \caption{消融实验定量结果}
+    \caption{消融实验定量结果（CLoSe）}
     \label{tab:ch4-ablation}
-    \setlength{\tabcolsep}{6pt}
-    \begin{tabular}{lccccc}
+    \setlength{\tabcolsep}{7pt}
+    \begin{tabular}{lcccc}
         \toprule
         \textbf{实验设置}
-        & \textbf{分类准确率}$\uparrow$ & \textbf{连续参数MAE}$\downarrow$ & \textbf{尺寸参数MAE}$\downarrow$ & \textbf{结构合法率}$\uparrow$ & \textbf{成功率}$\uparrow$ \\
+        & \textbf{CD (cm)}$\downarrow$ & \textbf{F-Score}$\uparrow$ & \textbf{SSR}$\uparrow$ & \textbf{Val. Rate}$\uparrow$ \\
         \midrule
-        去除身体测量先验
-        & 86.7\% & 0.109 & 0.149 & 95.0\% & 91.7\% \\
-        使用原生格式
-        & 84.2\% & 0.093 & 0.082 & 62.5\% & 58.3\% \\
-        简化提示规则
-        & 85.0\% & 0.088 & 0.075 & 78.3\% & 73.3\% \\
+        (a) 去除身体测量先验
+        & 4.201 & 0.741 & 81.3\% & 88.2\% \\
+        (b) 使用原生格式
+        & 1.890 & 0.892 & 96.2\% & 98.0\% \\
         \midrule
         完整模型（本章方法）
-        & \textbf{87.5\%} & \textbf{0.071} & \textbf{0.058} & \textbf{95.8\%} & \textbf{93.3\%} \\
+        & \textbf{1.621} & \textbf{0.896} & \textbf{98.4\%} & \textbf{100\%} \\
         \bottomrule
     \end{tabular}
 \end{table}

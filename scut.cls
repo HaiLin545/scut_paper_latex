@@ -195,13 +195,57 @@
 \renewcommand{\cftchapleader}{\normalfont\cftdotfill{\cftchapdotsep}}
 \renewcommand{\cftdotsep}{1.5}            % 点的密集程度
 \renewcommand{\cftchapdotsep}{\cftdotsep} % 章的点间距与其他级别一致
+
+% 插图目录条目前加"图"，表格目录条目前加"表"
+\renewcommand{\cftfigpresnum}{图\,}
+\renewcommand{\cfttabpresnum}{表\,}
+\newlength{\myfiglength}
+\settowidth{\myfiglength}{\cftfigpresnum}
+\addtolength{\cftfignumwidth}{\myfiglength}
+\newlength{\mytablength}
+\settowidth{\mytablength}{\cfttabpresnum}
+\addtolength{\cfttabnumwidth}{\mytablength}
+
+% 消除插图/表格目录中章节间的额外间距
+\setlength{\cftbeforefigskip}{0pt}
+\setlength{\cftbeforetabskip}{0pt}
+% tocloft [titles] 模式下上述设置可能不生效，
+% 需将 \chapter 写入 .lof/.lot 的 \addvspace 置零
+\newcommand{\removeloflotgap}{%
+  \let\origaddvspace\addvspace
+  \renewcommand{\addvspace}[1]{}%
+}
+\newcommand{\restoreaddvspace}{%
+  \let\addvspace\origaddvspace
+}
+\newcommand{\figprefix}{图 \,}
+\newcommand{\tabprefix}{表 \,}
+\renewcommand*\l@figure[2]{%
+  \begingroup
+    \let\numberline@orig\numberline
+    \renewcommand{\numberline}[1]{\numberline@orig{\figprefix ##1}}%
+    \@dottedtocline{1}{0em}{4.5em}{#1}{#2}%
+  \endgroup
+}
+\renewcommand*\l@table[2]{%
+  \begingroup
+    \let\numberline@orig\numberline
+    \renewcommand{\numberline}[1]{\numberline@orig{\tabprefix ##1}}%
+    \@dottedtocline{1}{0em}{4.5em}{#1}{#2}%
+  \endgroup
+}
+
 \newcommand{\maketableofcontents}{
     \clearpage
     \tableofcontents
-    \addcontentsline{toc}{chapter}{插图目录} 
+    \addcontentsline{toc}{chapter}{插图目录}
+    \removeloflotgap
     \listoffigures
-    \addcontentsline{toc}{chapter}{表格目录} 
+    \restoreaddvspace
+    \addcontentsline{toc}{chapter}{表格目录}
+    \removeloflotgap
     \listoftables
+    \restoreaddvspace
 }
 
 % 参考文献
