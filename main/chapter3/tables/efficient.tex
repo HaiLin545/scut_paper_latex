@@ -3,10 +3,11 @@
     \centering
     \caption{计算效率对比}
     \label{tab:efficiency}
+    \renewcommand{\arraystretch}{1.2} 
     \setlength{\tabcolsep}{10pt}
     \begin{tabular}{lcccc}
         \toprule
-        方法 & 高斯数量 & 训练时间 & 模型大小 & FPS \\
+        方法 & 高斯数量 & 训练时间 & 模型大小 & 帧率 \\
         \midrule
         IHuman & 220,416 & $\sim$2 min & 58.26 MB & 44 \\
         \textbf{本章方法} & \textbf{82,658} & $\sim$2 min & \textbf{32.36 MB} & \textbf{50} \\

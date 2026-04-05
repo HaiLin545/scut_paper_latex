@@ -1,12 +1,13 @@
-\begin{table}[t]
+\begin{table}[htbp]
 	\centering
 	\caption{X-Avatar数据集（序列00019）上的定量消融实验结果}
 	\label{tab:ablation}
-	\setlength{\tabcolsep}{12pt}
+	\renewcommand{\arraystretch}{1.2} 
+	\setlength{\tabcolsep}{4pt}
 	\begin{tabular}{lccc|cc}
 		\toprule
 		设置
-		& PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$ & Normal$\downarrow$ & CD$\downarrow$ \\
+		& 峰值信噪比$\uparrow$ & 结构相似性$\uparrow$ & 感知距离$\downarrow$ & 法向误差$\downarrow$ & 倒角距离$\downarrow$ \\
 		\midrule
 		去除面片高斯
 		& 26.89  & 0.9721  & 0.0189   & 2.143    & 0.128      \\

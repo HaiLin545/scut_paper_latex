@@ -1,11 +1,11 @@
-
-\begin{algorithm}[t]
-    \caption{顶点高斯属性的解析推导}
+\begin{algorithm}[htbp]
+    \begin{spacing}{1.4}
+    \caption{顶点高斯属性解析推导算法}
     \label{alg:vertex_gaussian}
-    \textbf{输入}：姿态顶点 $\mathbf{v}^p \in \mathbb{R}^3$，邻接面片集合 $\mathcal{N}$，一环邻域 $\mathcal{N}_1$\\
-    \textbf{超参数}：$\gamma = 0.5$，$\epsilon = 10^{-3}$\\
-    \textbf{输出}：$\boldsymbol{\mu}_v \in \mathbb{R}^3$，$\mathbf{R}_v \in SO(3)$，$\mathbf{s}_v \in \mathbb{R}^3$\\
+    \algsetup{linenosize=\normalsize}
     \begin{algorithmic}[1]
+        \REQUIRE 姿态顶点 $\mathbf{v}^p \in \mathbb{R}^3$，邻接面片集合 $\mathcal{N}$，一环邻域 $\mathcal{N}_1$；超参数 $\gamma = 0.5$，$\epsilon = 10^{-3}$
+        \ENSURE $\boldsymbol{\mu}_v \in \mathbb{R}^3$，$\mathbf{R}_v \in SO(3)$，$\mathbf{s}_v \in \mathbb{R}^3$
         \STATE \textcolor{gray}{// 位置：锚定于顶点}
         \STATE $\boldsymbol{\mu}_v \leftarrow \mathbf{v}^p$
         \STATE \textcolor{gray}{// 旋转：面积加权法向 + 稳定正交基}
@@ -17,6 +17,7 @@
         \STATE \textcolor{gray}{// 缩放：绑定最短邻域边长}
         \STATE $d_{\min} \leftarrow \min_{\mathbf{v}_k \in \mathcal{N}_1} \|\mathbf{v}_k^p - \mathbf{v}^p\|$
         \STATE $\mathbf{s}_v \leftarrow (\gamma \cdot d_{\min},\; \gamma \cdot d_{\min},\; \epsilon)$
-        \STATE \textbf{return} $\boldsymbol{\mu}_v,\; \mathbf{R}_v,\; \mathbf{s}_v$
+        \STATE \textbf{返回} $\boldsymbol{\mu}_v,\; \mathbf{R}_v,\; \mathbf{s}_v$
     \end{algorithmic}
+    \end{spacing}
 \end{algorithm}

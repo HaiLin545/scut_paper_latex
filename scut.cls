@@ -41,8 +41,8 @@
 
 % 字体设置
 \setmainfont{Times New Roman}
-\setCJKmainfont{SimSun}[AutoFakeBold=5]
-\setCJKfamilyfont{zhsong}{SimSun}[AutoFakeBold=5]
+\setCJKmainfont{SimSun}[AutoFakeBold=4.5]
+\setCJKfamilyfont{zhsong}{SimSun}[AutoFakeBold=4.5]
 
 
 % \setCJKfamilyfont{zhhei}{SimHei}
@@ -63,9 +63,9 @@
 \setcounter{totalnumber}{5}
 
 % 缩小浮动体与正文之间的间距
-\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\floatsep}{8pt plus 2pt minus 2pt}
-\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
 
 % 图表标题格式："图 x-y 内容"（无冒号，编号用短横线，五号字，紧凑间距）
 \captionsetup{labelsep=space, font=small, aboveskip=4pt, belowskip=2pt}

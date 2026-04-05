@@ -2,12 +2,13 @@
     \centering
     \caption{姿态噪声鲁棒性压力测试}
     \label{tab:noise}
+    \renewcommand{\arraystretch}{1.2} 
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{l|cc|cc|cc|cc}
         \toprule
         \multirow{2}{*}{噪声强度 $\sigma$}
-        & \multicolumn{4}{c|}{PSNR$\uparrow$}
-        & \multicolumn{4}{c}{Normal ($\times 10^{-3}$)$\downarrow$} \\
+        & \multicolumn{4}{c|}{峰值信噪比$\uparrow$}
+        & \multicolumn{4}{c}{法向误差（$\times 10^{-3}$）$\downarrow$} \\
         \cmidrule(lr){2-5} \cmidrule(lr){6-9}
         & 本章方法 & $\Delta$ & IHuman & $\Delta$ & 本章方法 & $\Delta$ & IHuman & $\Delta$ \\
         \midrule

@@ -2,65 +2,74 @@
 
 \section{引言}
 
+基于3D高斯泼溅（3DGS\cite{3dgs}）的人体重建方法兼具显式表示和实时渲染能力，已成为单目视频数字化身重建的重要技术路线，近期也出现了多项代表性工作\cite{gart, gaussian-avatar, gom-avatar, ihuman}。但现有方法在姿态泛化方面仍存在明显不足。如图\ref{fig:motivation}所示，模型在训练姿态下通常可以保持较好的高斯分布；当输入训练集中未出现的姿态时，高斯基元会偏离网格表面，进而出现表面空洞和几何伪影，渲染质量明显下降。该问题限制了高斯数字化身在交互场景中的实际应用。
+
 \begin{figure}[b]
     \centering
     \includegraphics[width=\linewidth]{main/chapter3/figures/研究动机.pdf}
     \caption{研究动机示意图}
     \label{fig:motivation}
 \end{figure}
-基于3D高斯泼溅（3DGS\cite{3dgs}）的人体重建方法凭借其显式表示与实时渲染能力，已成为从单目视频构建可驱动数字化身的主流技术路线，近期已涌现出多项代表性工作\cite{gart, gaussian-avatar, gom-avatar, ihuman}。然而，现有方法在姿态泛化能力方面仍存在根本性不足。如图\ref{fig:motivation}所示，在训练姿态下，高斯基元能够紧密贴合人体网格表面，呈现出合理的空间分布；然而当使用训练集中未出现的姿态进行驱动时，高斯基元发生显著偏移，脱离底层网格表面，造成表面空洞与几何伪影，导致渲染质量急剧下降。这一问题制约了基于高斯泼溅的数字化身在实际交互场景中的应用，本章围绕这一核心问题展开研究。
 
-造成上述问题的根本原因在于现有方法中高斯基元的几何属性与人体网格拓扑之间缺乏\textbf{显式关联}。具体而言，当前主流方法\cite{gart, gaussian-avatar, gom-avatar, ihuman}通常将高斯基元视为自由浮动的实体，其旋转与缩放属性通过无约束的梯度下降独立优化。这种"自由优化"范式虽然赋予了模型较强的拟合灵活性，却忽略了一个关键的物理事实：人体表面的衣物和皮肤在运动过程中会随骨骼驱动发生局部的拉伸与压缩，而这些形变严格受控于底层网格的拓扑连接关系。由于高斯的旋转和缩放参数与网格拓扑相互解耦，模型本质上只能记忆训练姿态下的参数配置，而无法感知和响应新姿态所引发的表面形变。因此，当人体进入未见过的姿态时，高斯基元便会脱离网格表面，产生"漂浮高斯"、表面空洞或穿模等几何伪影。尽管部分近期工作\cite{ihuman, gom-avatar}尝试利用网格法向来约束高斯的旋转方向，但缩放属性仍作为自由变量优化。这种"部分约束"的策略并不能从根本上解决拓扑不一致问题——在大幅度姿态变化下，未受约束的缩放参数仍会导致高斯覆盖范围与实际表面形变不匹配，引发严重的几何不一致。
+上述问题的根源在于，现有方法没有在高斯基元几何属性与人体网格拓扑之间建立\textbf{显式关联}。当前主流方法\cite{gart, gaussian-avatar, gom-avatar, ihuman}通常将高斯基元视为自由浮动实体，其旋转和缩放通过无约束梯度下降独立优化。该“自由优化”范式虽然具有较强拟合能力，但忽略了人体表面形变受拓扑连接约束这一基本规律。人体表面的衣物和皮肤会随骨骼驱动发生局部拉伸与压缩，这些变化由底层网格连接关系决定。由于高斯旋转与缩放参数同网格拓扑解耦，模型更容易记忆训练姿态参数，而难以响应新姿态带来的局部形变。人体被驱动到未见姿态时，高斯基元容易偏离网格表面，出现“漂浮高斯”、表面空洞和穿模等伪影。部分近期工作\cite{ihuman, gom-avatar}尝试用网格法向约束高斯旋转方向，但缩放仍是自由变量。这类“部分约束”难以从根本上解决拓扑不一致问题。在大幅姿态变化下，未受约束的缩放仍会导致高斯覆盖范围与真实表面形变不匹配。
 
-针对上述问题，本章提出了一种基于拓扑绑定的三维高斯人体重建方法。该方法的核心思想是从根本上改变高斯属性的获取方式：将其从"自由优化"转变为"几何驱动的解析推导"。具体而言，高斯基元的旋转与缩放不再作为可学习的自由参数，而是由变形后网格的局部几何特征（面片法向量、边长、内切圆半径等）解析地唯一确定。这种设计使得高斯基元天然继承网格的拓扑连续性，在人体发生大幅度形变时仍能与表面保持严格的几何一致性。此外，由于解析推导的数值稳定性直接依赖于底层网格的几何质量，本章进一步引入等边正则化约束，防止网格面片在剧烈运动下退化为狭长三角形，从而保障整个推导框架在复杂姿态下的鲁棒性。在PeopleSnapshot和X-Avatar两个公开数据集上的广泛实验表明，该方法在保持高质量渲染效果的同时，显著提升了数字化身在训练分布外姿态下的几何精度与视觉完整性。
+针对上述问题，本章提出一种基于拓扑绑定的三维高斯人体重建方法。方法核心是改变高斯属性的获取机制，将“自由优化”改为“几何驱动的解析推导”。具体而言，高斯基元的旋转和缩放不再作为可学习自由参数，而由变形后网格的局部几何特征（面片法向、边长、内切圆半径等）解析确定。该设计使高斯基元在人体大幅形变时仍与网格表面保持一致。考虑到解析推导对网格质量较敏感，本章进一步加入等边正则化，抑制剧烈运动下的狭长三角形退化，提高复杂姿态下的稳定性。在PeopleSnapshot~\cite{people-snapshot}和X-Avatar~\cite{x-avatar}上的实验表明，该方法在保持渲染质量的同时，能够明显提升训练分布外姿态下的几何精度和视觉完整性。
+与仅在渲染损失层面进行优化的方案相比，本章方法将几何一致性引入表示结构本身，使训练和驱动阶段遵循同一几何约束。该思路的优势在于，它不依赖额外姿态先验或复杂后处理，能够在现有3DGS优化框架内直接落地，具有较好的工程可实现性。
 
 \section{问题定义}
-本章旨在解决从单目视频序列中重建可驱动3D人体模型的任务。给定一段包含人体运动的RGB视频序列 $\mathcal{V} = \{\mathbf{I}_t\}_{t=1}^T$，其中 $\mathbf{I}_t$ 表示第 $t$ 帧的图像。同时，假设每一帧对应的人体姿态参数 $\boldsymbol{\theta}_t \in \mathbb{R}^{72}$ 和相机参数 $\boldsymbol{\pi}_t$ 已知（通常通过现有的姿态估计算法获取）。目标是学习一个参数化的人体表示函数 $\mathcal{F}(\boldsymbol{\theta}, \mathbf{v})$，该函数能够根据任意给定的姿态 $\boldsymbol{\theta}$ 和视角 $\mathbf{v}$，合成出具有高保真细节的人体图像 $\hat{\mathbf{I}}$。
+本章任务是从单目视频序列重建可驱动三维人体模型。给定包含人体运动的RGB视频序列 $\mathcal{V} = \{\mathbf{I}_t\}_{t=1}^T$，其中 $\mathbf{I}_t$ 表示第 $t$ 帧图像，并假设每帧对应的人体姿态参数 $\boldsymbol{\theta}_t \in \mathbb{R}^{72}$ 与相机参数 $\boldsymbol{\pi}_t$ 已知（通常由现有姿态估计算法获取）。目标是学习参数化人体表示函数，使其在任意姿态与视角下合成高保真人体图像。
+\begin{equation}
+    \hat{\mathbf{I}} = \mathcal{F}(\boldsymbol{\theta}, \mathbf{v})
+    \label{eq:ch3-task}
+\end{equation}
+其中，$\boldsymbol{\theta}$ 表示目标姿态参数，$\mathbf{v}$ 表示目标视角，$\hat{\mathbf{I}}$ 表示模型合成的人体图像。
 
-在基于3DGS的框架下，人体通常被表示为一组依附于 SMPL 骨骼模型\cite{smpl} 的高斯基元集合 $\mathcal{G} = \{G_i\}_{i=1}^N$。每个高斯基元 $G_i$ 由一组参数描述：位置 $\boldsymbol{\mu}_i$、协方差矩阵 $\boldsymbol{\Sigma}_i$（由旋转 $\mathbf{R}_i$ 和缩放 $\mathbf{s}_i$ 决定）、不透明度 $\alpha_i$ 以及球谐系数 $\mathbf{c}_i$。
+在基于3DGS的框架中，人体通常表示为依附于SMPL骨骼模型\cite{smpl}的高斯基元集合 $\mathcal{G} = \{G_i\}_{i=1}^N$。每个高斯基元 $G_i$ 包含位置 $\boldsymbol{\mu}_i$、协方差矩阵 $\boldsymbol{\Sigma}_i$（由旋转 $\mathbf{R}_i$ 和缩放 $\mathbf{s}_i$ 决定）、不透明度 $\alpha_i$ 以及球谐系数 $\mathbf{c}_i$。
 
-现有的优化方法通常将位置 $\boldsymbol{\mu}_i$ 定义为相对于SMPL网格顶点的偏移，但对旋转 $\mathbf{R}_i$ 和缩放 $\mathbf{s}_i$ 则作为独立变量进行无约束优化：
+现有优化方法通常将位置 $\boldsymbol{\mu}_i$ 定义为相对SMPL网格顶点的偏移，而将旋转 $\mathbf{R}_i$ 和缩放 $\mathbf{s}_i$ 作为独立变量进行无约束优化。
 \begin{equation}
     \min_{\{\mathbf{R}_i, \mathbf{s}_i, \dots\}} \sum_{t=1}^T \mathcal{L}_{\text{render}}(\hat{\mathbf{I}}_t(\mathcal{G}), \mathbf{I}_t)
 \end{equation}
-其中 $\mathcal{L}_{\text{render}}$ 为渲染损失。这种定义方式存在的根本缺陷在于：旋转 $\mathbf{R}_i$ 和缩放 $\mathbf{s}_i$ 在优化过程中与底层几何拓扑解耦。当人体处于训练集中未出现的极端姿态时，由于缺乏物理约束，高斯基元无法感知局部表面的拉伸或挤压，导致其空间分布与实际几何表面不一致（即产生拓扑不一致）。
+其中 $\mathcal{L}_{\text{render}}$ 为渲染损失。这种定义方式的根本缺陷是，旋转 $\mathbf{R}_i$ 和缩放 $\mathbf{s}_i$ 在优化过程中与底层几何拓扑解耦。当人体处于训练集中未出现的极端姿态时，高斯基元难以感知局部表面的拉伸或挤压，空间分布会偏离真实几何表面，从而产生拓扑不一致。
 
-因此，本章的核心问题可以定义为：如何构建一个映射函数 $\Phi: \mathcal{M}(\boldsymbol{\theta}) \rightarrow \{\mathbf{R}_i, \mathbf{s}_i\}$，使得高斯基元的几何属性不再是自由变量，而是由变形后的人体网格 $\mathcal{M}(\boldsymbol{\theta})$ 的局部微分几何性质解析唯一确定，从而在原理上保证重建模型在任意姿态下的拓扑一致性。
+因此，本章核心问题可表述为，如何构建映射函数 $\Phi: \mathcal{M}(\boldsymbol{\theta}) \rightarrow \{\mathbf{R}_i, \mathbf{s}_i\}$，使高斯基元几何属性不再是自由变量，而由变形后人体网格 $\mathcal{M}(\boldsymbol{\theta})$ 的局部微分几何性质解析确定，从而在原理上保证模型在任意姿态下的拓扑一致性。
+围绕该问题，本章的技术目标可进一步分解为三点。第一，构建随姿态变化稳定更新的局部几何描述，使高斯属性能够与网格形变同步变化。第二，在保证表面覆盖的同时兼顾细节表达，避免仅依赖单一高斯类型导致的覆盖空洞或细节不足。第三，在训练中控制网格退化带来的数值不稳定，确保解析推导在复杂动作下仍可稳定工作。
 
 \section{3D高斯泼溅基础}
 本章提出的方法建立在3D高斯泼溅（3D Gaussian Splatting, 3DGS）\cite{3dgs}的场景表示基础之上。作为一种新兴的显式场景表示技术，3DGS结合了点云的灵活性与体渲染的可微性，能够实时渲染高质量的复杂场景。本节将简要回顾3DGS的核心数学表述、投影机制及光栅化过程。
 
-具体而言，3DGS将场景建模为一组各向异性的3D高斯基元 $\mathcal{G} = \{G_i\}_{i=1}^N$。每个基元 $G_i$ 在世界坐标系中由其中心位置（均值）$\boldsymbol{\mu}_i \in \mathbb{R}^3$ 和协方差矩阵 $\boldsymbol{\Sigma}_i \in \mathbb{R}^{3 \times 3}$ 定义。其在空间中任意一点 $\mathbf{x}$ 处的概率密度函数如下所示：
+具体而言，3DGS将场景建模为一组各向异性的3D高斯基元 $\mathcal{G} = \{G_i\}_{i=1}^N$。每个基元 $G_i$ 在世界坐标系中由中心位置（均值）$\boldsymbol{\mu}_i \in \mathbb{R}^3$ 和协方差矩阵 $\boldsymbol{\Sigma}_i \in \mathbb{R}^{3 \times 3}$ 定义。其在空间任意一点 $\mathbf{x}$ 的概率密度函数如下所示。
 \begin{equation}
     G_i(\mathbf{x}) = \exp\left(-\frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^\top \boldsymbol{\Sigma}_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i)\right)
 \end{equation}
-为了保证协方差矩阵 $\boldsymbol{\Sigma}_i$ 在优化过程中的半正定性，通常将其分解为缩放矩阵 $\mathbf{S}_i \in \mathbb{R}^3$ 和旋转矩阵 $\mathbf{R}_i \in SO(3)$：即 $\boldsymbol{\Sigma}_i = \mathbf{R}_i \mathbf{S}_i \mathbf{S}_i^\top \mathbf{R}_i^\top$。其中，缩放矩阵 $\mathbf{S}_i$ 为对角矩阵，对角线元素为缩放向量 $\mathbf{s}_i = (s_x, s_y, s_z)$；旋转矩阵 $\mathbf{R}_i$ 通常由四元数 $\mathbf{q}_i$ 参数化以避免万向节死锁。此外，每个高斯基元还包含用于表征外观颜色的球谐系数（Spherical Harmonics, SH）$\mathbf{c}_i$ 以及控制透明度的不透明度参数 $\alpha_i \in [0, 1]$。
+为了保证协方差矩阵 $\boldsymbol{\Sigma}_i$ 在优化过程中的半正定性，通常将其分解为缩放矩阵 $\mathbf{S}_i \in \mathbb{R}^3$ 和旋转矩阵 $\mathbf{R}_i \in SO(3)$，即 $\boldsymbol{\Sigma}_i = \mathbf{R}_i \mathbf{S}_i \mathbf{S}_i^\top \mathbf{R}_i^\top$。其中，缩放矩阵 $\mathbf{S}_i$ 为对角矩阵，对角线元素为缩放向量 $\mathbf{s}_i = (s_x, s_y, s_z)$；旋转矩阵 $\mathbf{R}_i$ 通常由四元数 $\mathbf{q}_i$ 参数化，以避免万向节死锁。此外，每个高斯基元还包含用于表征外观颜色的球谐系数（Spherical Harmonics, SH）$\mathbf{c}_i$，以及控制透明度的不透明度参数 $\alpha_i \in [0, 1]$。
 
-为了将3D高斯投影到2D图像平面，3DGS采用了基于EWA（Elliptical Weighted Average）的泼溅算法。给定视图变换矩阵 $\mathbf{W}$ 和投影矩阵，3D高斯在像平面上的投影仍是一个2D高斯分布。其2D协方差矩阵 $\boldsymbol{\Sigma}^{2D}$ 可通过雅可比矩阵 $\mathbf{J}$ 近似计算：
+为了将3D高斯投影到2D图像平面，3DGS采用基于EWA（Elliptical Weighted Average）~\cite{zwicker2001ewa}的泼溅算法。给定视图变换矩阵 $\mathbf{W}$ 和投影矩阵，3D高斯在像平面上的投影仍为2D高斯分布。其2D协方差矩阵 $\boldsymbol{\Sigma}^{2D}$ 可通过雅可比矩阵 $\mathbf{J}$ 近似计算。
 \begin{equation}
     \boldsymbol{\Sigma}^{2D} = \mathbf{J} \mathbf{W} \boldsymbol{\Sigma} \mathbf{W}^\top \mathbf{J}^\top
 \end{equation}
-其中 $\mathbf{J}$ 是投影变换的仿射近似雅可比矩阵。这种投影方式能够使得高斯基元根据视角与距离自适应地在屏幕上形成不同形状和大小的椭圆。渲染过程采用基于图块的高效光栅化管线。首先，算法根据视锥体剔除不可见的高斯点，并根据深度对剩余的高斯基元进行排序。随后，对于每个像素 $u$，其最终颜色 $C(u)$ 通过对重叠在该像素上的 $N$ 个有序高斯基元进行 $\alpha$-blending 累积计算得出：
+其中 $\mathbf{J}$ 是投影变换的仿射近似雅可比矩阵。这种投影方式可使高斯基元根据视角与距离自适应形成不同形状和大小的椭圆。渲染过程采用基于图块的高效光栅化管线。首先，算法根据视锥体剔除不可见高斯点，并按深度对剩余高斯基元排序。随后，对每个像素 $u$，其最终颜色 $C(u)$ 由重叠在该像素上的 $N$ 个有序高斯基元通过 $\alpha$-blending 累积得到。
 \begin{equation}
     C(u) = \sum_{i \in \mathcal{N}} c_i \alpha_i' \prod_{j=1}^{i-1} (1 - \alpha_j')
 \end{equation}
-其中，$c_i$ 是根据视角方向通过球谐函数计算出的颜色，$\alpha_i'$ 是考虑了该像素在2D高斯分布中概率密度的有效不透明度：$\alpha_i' = \alpha_i G_i(\mathbf{x}) $。该光栅化过程是完全可微的，允许通过反向传播直接优化所有高斯参数（位置、旋转、缩放、不透明度、SH系数），以最小化渲染图像与真实图像之间的重建误差。这也是本章所提方法能够与现有优化框架无缝集成的技术基础。
+其中，$c_i$ 是根据视角方向通过球谐函数计算的颜色，$\alpha_i'$ 是考虑该像素在2D高斯分布中概率密度后的有效不透明度，满足 $\alpha_i' = \alpha_i G_i(\mathbf{x})$。该光栅化过程完全可微，可通过反向传播直接优化所有高斯参数（位置、旋转、缩放、不透明度、SH系数），以最小化渲染图像与真实图像之间的重建误差。这也是本章方法可与现有优化框架无缝集成的技术基础。
 
 \section{基于拓扑绑定的三维高斯人体重建方法}
-本章提出的方法由三个核心模块构成：（1）\textbf{可变形穿衣人网格}（\ref{subsec:deformable-mesh}节）：以SMPL参数化模型为拓扑骨架，通过神经形状编码器学习逐顶点偏移量，构建包含特定人体的衣物细节的规范网格，并经线性混合蒙皮驱动至目标姿态，为高斯基元提供拓扑一致的穿衣人几何载体；（2）\textbf{拓扑绑定的高斯属性推导}（\ref{subsec:gaussian-derivation}节）：在网格面片与顶点处分别构建高斯基元，并利用局部微分几何性质（法向、内切圆半径、边长等）解析计算其旋转与缩放，实现几何属性与网格形变的解析绑定；（3）\textbf{优化目标与正则化}（\ref{subsec:loss}节）：设计包含渲染重建损失、法向监督损失与等边正则化的联合优化目标，在保证渲染质量的同时保证网格在驱动过程中的几何一致性。本章提出的方法整体框架如图\ref{fig:chapter3-method}所示，下文对各模块进行详细阐述。
+本章方法由三个核心模块构成。（1）\textbf{可变形穿衣人网格}（\ref{subsec:deformable-mesh}节），以SMPL参数化模型为拓扑骨架，通过神经形状编码器学习逐顶点偏移量，构建包含个体衣物细节的规范网格，并用线性混合蒙皮驱动到目标姿态，为高斯基元提供拓扑一致的几何载体。（2）\textbf{拓扑绑定的高斯属性推导}（\ref{subsec:gaussian-derivation}节），在网格面片和顶点处分别构建高斯基元，并利用局部微分几何性质（法向、内切圆半径、边长等）解析计算旋转与缩放，实现几何属性与网格形变的绑定。（3）\textbf{优化目标与正则化}（\ref{subsec:loss}节），通过渲染重建损失、法向监督损失和等边正则化构建联合优化目标，在保证渲染质量的同时提高驱动过程的几何稳定性。整体框架如图\ref{fig:chapter3-method}所示。
+三部分的关系是由“几何载体”到“属性绑定”再到“稳定优化”的递进。前一模块提供可驱动网格基础，中间模块给出确定性的高斯几何参数，后一模块通过损失设计约束训练过程，三者共同构成完整闭环。
 
 \subsection{可变形穿衣人网格}
 \label{subsec:deformable-mesh}
 
 本章方法以SMPL参数化人体模型\cite{smpl}作为拓扑骨架。SMPL提供了一个具有固定连接关系的标准拓扑模板 $\mathcal{M}_c = (\mathbf{V}_c, \mathbf{F})$，其中 $\mathbf{V}_c = \{\mathbf{v}_i^c\}_{i=1}^N \in \mathbb{R}^{N \times 3}$ 包含 $N=6890$ 个顶点在T-pose下的坐标，$\mathbf{F} = \{f_j\}_{j=1}^M$ 包含 $M$ 个三角面片的顶点索引。
 
-标准SMPL仅能表示裸体形状，无法反映个性化的衣物几何（如宽松上衣或裙摆褶皱）。为此，本章引入基于多分辨率哈希编码\cite{mueller2022instant}的神经形状编码器 $E_s: \mathbb{R}^3 \rightarrow \mathbb{R}^3$，以规范空间中的顶点坐标为输入，预测逐顶点偏移量：
+标准SMPL仅能表示裸体形状，无法反映个性化的衣物几何（如宽松上衣或裙摆褶皱）。为此，本章引入基于多分辨率哈希编码\cite{mueller2022instant}的神经形状编码器 $E_s: \mathbb{R}^3 \rightarrow \mathbb{R}^3$，以规范空间中的顶点坐标为输入，预测逐顶点偏移量。
 \begin{equation}
     \Delta\mathbf{v}_i = E_s(\mathbf{v}_i^c), \quad \mathbf{v}_i^s = \mathbf{v}_i^c + \Delta\mathbf{v}_i
 \end{equation}
 由此得到的个性化规范网格 $\mathcal{M}_s = (\mathbf{V}_s, \mathbf{F})$（其中 $\mathbf{V}_s = \{\mathbf{v}_i^s\}_{i=1}^N$）在保留SMPL固有拓扑的前提下，能够表达特定个体的体型差异与穿衣细节。
 
-本章采用标准线性混合蒙皮（Linear Blend Skinning, LBS）来将规范网格驱动至目标姿态。给定姿态参数 $\boldsymbol{\theta} \in \mathbb{R}^{23 \times 3}$（各关节的轴角旋转）和根节点平移 $\mathbf{t}$，每个顶点经蒙皮权重加权的刚体变换映射到世界坐标：
+本章采用标准线性混合蒙皮（Linear Blend Skinning, LBS）将规范网格驱动至目标姿态。给定姿态参数 $\boldsymbol{\theta} \in \mathbb{R}^{23 \times 3}$（各关节的轴角旋转）和根节点平移 $\mathbf{t}$，每个顶点经蒙皮权重加权的刚体变换映射到世界坐标。
 \begin{equation}
     \mathbf{v}_i^p = \sum_{k=1}^{K} w_{i,k} \mathbf{T}_k(\boldsymbol{\theta}, \mathbf{t}) \mathbf{v}_i^s
 \end{equation}
@@ -73,65 +82,68 @@
     \label{fig:chapter3-method}
 \end{figure}
 
-
 \subsection{拓扑绑定的高斯属性推导}
 \label{subsec:gaussian-derivation}
 
-本章方法的核心在于：高斯基元的几何属性（位置、旋转、缩放）不再作为自由变量通过梯度下降优化，而是从姿态网格 $\mathcal{M}_p$ 的局部几何中解析计算得到。为兼顾表面的整体覆盖与局部细节，本章在网格上构建两类互补的高斯基元：\textbf{面片高斯}负责提供结构化的表面覆盖，\textbf{顶点高斯}负责刻画高频细节并改善面片交界处的连续性。每个高斯基元由位置 $\boldsymbol{\mu} \in \mathbb{R}^3$、旋转 $\mathbf{R} \in SO(3)$、缩放 $\mathbf{s} \in \mathbb{R}_{+}^3$、不透明度 $\alpha \in [0,1]$ 及球谐系数 $\mathbf{c}$ 参数化，其中几何属性（位置、旋转和缩放）由网格解析推导，外观属性（不透明度和球谐系数）则作为可学习参数，从而保证高斯基元在驱动过程中的几何一致性，同时能够建模个性化的衣物外观。
+本章方法的关键是将高斯基元的几何属性（位置、旋转、缩放）从自由优化改为解析计算。几何属性由姿态网格 $\mathcal{M}_p$ 的局部几何量直接给出。为同时兼顾整体覆盖和局部细节，本章在网格上构建两类互补高斯。\textbf{面片高斯}用于结构化表面覆盖，\textbf{顶点高斯}用于刻画高频细节并改善面片交界处连续性。每个高斯基元由位置 $\boldsymbol{\mu} \in \mathbb{R}^3$、旋转 $\mathbf{R} \in SO(3)$、缩放 $\mathbf{s} \in \mathbb{R}_{+}^3$、不透明度 $\alpha \in [0,1]$ 和球谐系数 $\mathbf{c}$ 参数化。其中几何属性由网格解析推导，外观属性（不透明度与球谐系数）作为可学习参数，以保证驱动过程中的几何一致性并保留外观表达能力。
 
-\noindent\textbf{（1）面片高斯。} 对于姿态网格中的每个三角面片 $f_j \in \mathbf{F}$（顶点记为 $\{\mathbf{p}_1, \mathbf{p}_2, \mathbf{p}_3\}$），在其上绑定一个面片高斯 $\mathcal{G}_f^j$，各几何属性的推导过程如下：
 
-\textbf{位置：}面片高斯的中心 $\boldsymbol{\mu}_f^j$ 置于三角形的内心，即到三条边距离相等的点。内心通过各顶点对边长度的加权平均计算得到：
+\noindent\textbf{（1）面片高斯。} 对于姿态网格中的每个三角面片 $f_j \in \mathbf{F}$（顶点记为 $\{\mathbf{p}_1, \mathbf{p}_2, \mathbf{p}_3\}$），在其上绑定一个面片高斯 $\mathcal{G}_f^j$。其几何属性推导如下。
+
+\textbf{位置。} 面片高斯中心 $\boldsymbol{\mu}_f^j$ 置于三角形内心，即到三条边距离相等的点。内心由各顶点对边长度加权平均计算得到。
 \begin{equation}
     \boldsymbol{\mu}_f^j = \frac{l_1 \mathbf{p}_1 + l_2 \mathbf{p}_2 + l_3 \mathbf{p}_3}{l_1 + l_2 + l_3}
 \end{equation}
 其中 $l_k = \|\mathbf{p}_{(k+1)\bmod 3} - \mathbf{p}_{(k+2)\bmod 3}\|$ 为顶点 $\mathbf{p}_k$ 所对边的长度。与现有选择重心作为高斯初始几何中心的方法不同，本章选择三角形的内心作为高斯初始几何中心，以保证高斯基元被约束在三角面片内部的同时，实现对面片表面的最大化均匀覆盖。
 
-\textbf{旋转：}为使高斯基元始终贴合面片所在平面，本章构建了与面片一致的局部正交坐标系。首先计算面片的单位法向量：
+\textbf{旋转。} 为使高斯基元始终贴合面片所在平面，本章构建与面片一致的局部正交坐标系。首先计算面片单位法向量。
 \begin{equation}
     \mathbf{n}_f^j = \frac{(\mathbf{p}_2 - \mathbf{p}_1) \times (\mathbf{p}_3 - \mathbf{p}_1)}{\|(\mathbf{p}_2 - \mathbf{p}_1) \times (\mathbf{p}_3 - \mathbf{p}_1)\|}
 \end{equation}
 再沿第一条边构建切向量 $\mathbf{t}_1^j = (\mathbf{p}_2 - \mathbf{p}_1) / \|\mathbf{p}_2 - \mathbf{p}_1\|$，并取 $\mathbf{t}_2^j = \mathbf{n}_f^j \times \mathbf{t}_1^j$ 补全右手正交基。面片高斯的旋转矩阵即为 $\mathbf{R}_f^j = [\mathbf{t}_1^j,\; \mathbf{t}_2^j,\; \mathbf{n}_f^j]$。该定义保证了高斯的 $z$ 轴始终垂直于局部表面，$xy$ 平面始终与面片相切，使朝向随面片法向的变化而自动调整。
 
-\textbf{缩放：}缩放参数控制高斯的空间覆盖范围。为使其随面片的拉伸与压缩自适应变化，本章将切平面内的缩放因子与三角形的内切圆半径 $r_j$ 绑定。内切圆半径由面片面积 $A_j$ 与半周长 $p_j$ 确定：
+\textbf{缩放。} 缩放参数控制高斯空间覆盖范围。为使其随面片拉伸与压缩自适应变化，本章将切平面内缩放因子与三角形内切圆半径 $r_j$ 绑定。内切圆半径由面片面积 $A_j$ 与半周长 $p_j$ 决定。
 \begin{equation}
     r_j = \frac{A_j}{p_j}, \quad p_j = \frac{l_1 + l_2 + l_3}{2}
 \end{equation}
-面片高斯的缩放向量定义为：
+面片高斯的缩放向量定义如下。
 \begin{equation}
     s_{f,x}^j = s_{f,y}^j = \beta \cdot r_j, \quad s_{f,z}^j = \epsilon
 \end{equation}
-其中 $\beta = 0.5$ 为固定的缩放系数，$\epsilon = 10^{-3}$ 为法向厚度常数，使高斯呈扁平的薄片形态。$r_j$ 直接反映面片的局部尺寸：当网格因关节弯曲而发生拉伸时，面片面积增大，$r_j$ 随之增加，高斯自动扩展以填补表面间隙；反之则自动收缩，避免覆盖冗余。此外，所有面片高斯的不透明度固定为 $\alpha_f = 1.0$，以保证完整的表面覆盖。
+其中 $\beta = 0.5$ 为固定缩放系数，$\epsilon = 10^{-3}$ 为法向厚度常数，使高斯呈扁平薄片形态。$r_j$ 直接反映面片局部尺寸。当网格因关节弯曲发生拉伸时，面片面积增大，$r_j$ 随之增大，高斯自动扩展以填补表面间隙；反之则自动收缩，避免覆盖冗余。此外，所有面片高斯不透明度固定为 $\alpha_f = 1.0$，以保证表面完整覆盖。
+
+\input{main/chapter3/algorithm/face.tex}
+\input{main/chapter3/algorithm/vertex.tex}
 
 \noindent\textbf{（2）顶点高斯。} 仅依赖面片高斯虽能提供较均匀的表面覆盖，但在相邻面片的交界处以及高频几何细节区域，单一面片高斯的分辨率不足以保证渲染的连续性。为此，本章进一步在每个网格顶点处绑定一个顶点高斯 $\mathcal{G}_v^j$，与面片高斯形成互补。
 
-\textbf{位置：}顶点高斯的中心直接锚定于变形后的顶点位置：
+\textbf{位置。} 顶点高斯中心直接锚定于变形后顶点位置。
 \begin{equation}
     \boldsymbol{\mu}_v^j = \mathbf{v}_j^p
 \end{equation}
 
-\textbf{旋转：}顶点法向 $\mathbf{n}_v^j$ 通过其邻接面片法向的面积加权平均获得：
+\textbf{旋转。} 顶点法向 $\mathbf{n}_v^j$ 通过邻接面片法向的面积加权平均获得。
 \begin{equation}
     \tilde{\mathbf{n}}_v^j = \sum_{f \in \mathcal{N}(j)} A_f\,\mathbf{n}_f,\quad \mathbf{n}_v^j = \tilde{\mathbf{n}}_v^j \big/ \big\|\tilde{\mathbf{n}}_v^j\big\|
 \end{equation}
-其中 $\mathcal{N}(j)$ 为顶点 $j$ 的邻接面片集合，$A_f$ 与 $\mathbf{n}_f$ 分别为面片面积与单位法向。为构造数值稳定的正交基，选择与 $\mathbf{n}_v^j$ 最不平行的坐标轴作为参考方向，以最大化叉积的数值稳定性：
+其中 $\mathcal{N}(j)$ 为顶点 $j$ 的邻接面片集合，$A_f$ 与 $\mathbf{n}_f$ 分别为面片面积和单位法向。为构造数值稳定的正交基，选择与 $\mathbf{n}_v^j$ 最不平行的坐标轴作为参考方向，以提升叉积计算稳定性。
 \begin{equation}
     \mathbf{r} = \arg\min_{\mathbf{u}\in\{\mathbf{e}_x,\mathbf{e}_y,\mathbf{e}_z\}} |\mathbf{u}^\top\mathbf{n}_v^j|
 \end{equation}
-再由此构建正交切向量：
+据此构建正交切向量。
 \begin{equation}
     \mathbf{t}_1^j = \frac{\mathbf{r} \times \mathbf{n}_v^j}{\|\mathbf{r} \times \mathbf{n}_v^j\|},\quad
     \mathbf{t}_2^j = \mathbf{n}_v^j \times \mathbf{t}_1^j
 \end{equation}
 最终得到顶点高斯的旋转矩阵为 $\mathbf{R}_v^j=[\mathbf{t}_1^j,\;\mathbf{t}_2^j,\;\mathbf{n}_v^j]$。该定义保证了高斯的 $z$ 轴始终垂直于局部表面，$xy$ 平面始终与顶点所在平面相切，使朝向随顶点法向的变化而自动调整。
 
-\textbf{缩放：}顶点高斯的平面内尺度与局部网格密度相关联。设 $\mathcal{N}_1(j)$ 为顶点 $j$ 的一环邻域顶点集合，其缩放由到最近邻顶点的距离决定：
+\textbf{缩放。} 顶点高斯的平面内尺度与局部网格密度相关。设 $\mathcal{N}_1(j)$ 为顶点 $j$ 的一环邻域顶点集合，其缩放由到最近邻顶点的距离决定。
 \begin{equation}
     s_{v,x}^j = s_{v,y}^j = \gamma \cdot \min_{\mathbf{v}_k \in \mathcal{N}_1(j)} \|\mathbf{v}_k^p - \mathbf{v}_j^p\|,\quad s_{v,z}^j = \epsilon
 \end{equation}
 其中 $\gamma = 0.5$ 为固定缩放系数，$\epsilon = 10^{-3}$。取最小边长而非平均边长，可使顶点高斯的覆盖范围更为保守，避免与相邻面片高斯产生过度重叠。同样，不透明度固定为 $\alpha_v = 1.0$。
 
-\noindent\textbf{（3）完整的高斯表示。} 综合上述两类高斯，本章构建的完整表示包含 $M + N$ 个高斯基元：
+\noindent\textbf{（3）完整的高斯表示。} 综合上述两类高斯，本章构建的完整表示包含 $M + N$ 个高斯基元。
 \begin{equation}
     \mathcal{G} = \{\mathcal{G}_f^j\}_{j=1}^{M} \cup \{\mathcal{G}_v^j\}_{j=1}^{N}
 \end{equation}
@@ -139,44 +151,42 @@
 
 \noindent\textbf{（4）算法流程。} 为便于清晰理解上述解析推导过程，算法\ref{alg:face_gaussian}和算法\ref{alg:vertex_gaussian}分别给出了面片高斯与顶点高斯属性推导的完整伪代码。两个算法均以姿态网格的顶点坐标为输入，通过确定性的几何计算输出高斯的位置、旋转和缩放，整个过程不涉及任何可学习参数。
 
-\input{main/chapter3/algorithm/face.tex}
-\input{main/chapter3/algorithm/vertex.tex}
 
 \subsection{优化目标与正则化}
 \label{subsec:loss}
 
-本章采用端到端的训练方式，可学习参数包括：（1）形状编码器 $E_s$ 的网络参数 $\boldsymbol{\psi}$；（2）所有高斯的球谐系数 $\{\mathbf{c}_f^j, \mathbf{c}_v^j\}$。需要强调的是，高斯的几何属性 $(\boldsymbol{\mu}, \mathbf{R}, \mathbf{s})$ 始终由网格解析确定，不参与梯度更新。总损失函数由渲染重建损失、法向监督损失和几何正则化项三部分构成。
+本章采用端到端训练方式。可学习参数包括两部分，即形状编码器 $E_s$ 的网络参数 $\boldsymbol{\psi}$ 和所有高斯的球谐系数 $\{\mathbf{c}_f^j, \mathbf{c}_v^j\}$。高斯几何属性 $(\boldsymbol{\mu}, \mathbf{R}, \mathbf{s})$ 始终由网格解析确定，不参与梯度更新。总损失函数由渲染重建损失、法向监督损失和几何正则化项三部分构成。
 
-\noindent\textbf{渲染重建损失：}
-为同时保证色彩准确性与结构完整性，本章采用 $L_1$ 范数损失与 D-SSIM 损失\cite{wang2004image}的加权组合作为光度监督：
+\noindent\textbf{渲染重建损失。}
+为同时保证色彩准确性与结构完整性，本章采用 $L_1$ 范数损失与 D-SSIM 损失\cite{wang2004image}的加权组合作为光度监督。
 \begin{equation}
     \mathcal{L}_{\text{rgb}} = (1 - \lambda_{\text{ssim}}) \|\hat{\mathbf{I}} - \mathbf{I}_{gt}\|_1 + \lambda_{\text{ssim}} \mathcal{L}_{\text{D-SSIM}}(\hat{\mathbf{I}}, \mathbf{I}_{gt})
 \end{equation}
 其中 $\hat{\mathbf{I}}$ 为渲染图像，$\mathbf{I}_{gt}$ 为真实图像，$\lambda_{\text{ssim}} = 0.2$。
 
-\noindent\textbf{法向监督损失：}
-仅依赖光度损失难以提供足够的几何约束，尤其在纹理均匀的区域。为此，本章引入法向图的监督信号以增强几何细节的学习。具体地，利用预训练的高精度人体法向估计模型 Sapiens\cite{khirodkar2024sapiens} 提取法向图 $\mathbf{N}_{gt}$，并对渲染法向图 $\hat{\mathbf{N}}$ 施加监督。渲染法向图的生成方式为：在3DGS光栅化过程中，将每个高斯基元的球谐系数替换为其对应的网格法向量进行渲染。法向损失的形式与光度损失一致：
+\noindent\textbf{法向监督损失。}
+仅依赖光度损失难以提供足够的几何约束，尤其是在纹理均匀区域。为此，本章引入法向图监督以增强几何细节学习。具体做法是利用预训练的人体法向估计模型 Sapiens\cite{khirodkar2024sapiens} 提取法向图 $\mathbf{N}_{gt}$，并对渲染法向图 $\hat{\mathbf{N}}$ 施加监督。在3DGS光栅化阶段，将每个高斯基元的球谐系数替换为对应网格法向后进行渲染，即可得到 $\hat{\mathbf{N}}$。法向损失形式与光度损失一致。
 \begin{equation}
     \mathcal{L}_{\text{normal}} = (1 - \lambda_{\text{ssim}}) \|\hat{\mathbf{N}} - \mathbf{N}_{gt}\|_1 + \lambda_{\text{ssim}} \mathcal{L}_{\text{D-SSIM}}(\hat{\mathbf{N}}, \mathbf{N}_{gt})
 \end{equation}
 该伪监督信号在训练过程中为网格形状的优化提供了几何梯度引导，有助于编码器 $E_s$ 学习到更精确的顶点偏移量。
 
-\noindent\textbf{网格平滑正则化：}
-为防止形状编码器 $E_s$ 预测出高频噪声导致网格表面不光滑，本章对个性化网格 $\mathcal{M}_s$ 施加标准的几何平滑约束：
+\noindent\textbf{网格平滑正则化。}
+为避免形状编码器 $E_s$ 预测高频噪声导致网格表面不光滑，本章对个性化网格 $\mathcal{M}_s$ 施加标准几何平滑约束。
 \begin{equation}
     \mathcal{L}_{\text{mesh}} = \mathcal{L}_{\text{lap}} + \mathcal{L}_{\text{nc}}
 \end{equation}
 其中 $\mathcal{L}_{\text{lap}}$ 为拉普拉斯平滑项，约束每个顶点与其邻域的位置一致性；$\mathcal{L}_{\text{nc}}$ 为法向一致性项，惩罚相邻面片间法向的突变。
 
-\noindent\textbf{等边正则化：}
-由于高斯的缩放属性直接由面片内切圆半径和顶点边长解析确定，网格的几何质量对渲染结果有着直接影响。在LBS驱动下，关节附近的三角形可能发生严重畸变，退化为狭长的三角形，导致内切圆半径趋近于零，进而引发高斯尺度的数值不稳定和渲染伪影。为抑制这种退化现象，本章引入等边正则化项 $\mathcal{L}_{\text{tri}}$，从边长均匀性与角度稳定性两方面约束三角形质量。对于任一面片 $f$，记其三条边向量为 $\mathbf{e}_1,\mathbf{e}_2,\mathbf{e}_3$，内角集合为 $\Theta_f=\{\phi_1,\phi_2,\phi_3\}$：
+\noindent\textbf{等边正则化。}
+由于高斯缩放由面片内切圆半径和顶点边长解析确定，网格几何质量会直接影响渲染结果。在LBS驱动下，关节附近三角形可能严重畸变并退化为狭长形态，导致内切圆半径接近零，进而引发高斯尺度数值不稳定和渲染伪影。为抑制该问题，本章引入等边正则化项 $\mathcal{L}_{\text{tri}}$，从边长均匀性和角度稳定性两方面约束三角形质量。对于任一面片 $f$，其三条边向量记为 $\mathbf{e}_1,\mathbf{e}_2,\mathbf{e}_3$，内角集合记为 $\Theta_f=\{\phi_1,\phi_2,\phi_3\}$。
 \begin{equation}
     \mathcal{L}_{\text{tri}} = \sum_{f \in \mathbf{F}} \left[\mathrm{Var}\left(\{\|\mathbf{e}_1\|,\|\mathbf{e}_2\|,\|\mathbf{e}_3\|\}\right) + \sum_{\phi\in\Theta_f} (1-\cos\phi)^2\right]
 \end{equation}
 第一项通过最小化边长方差来避免出现过度拉伸的狭长三角形，第二项惩罚内角偏离 $60^\circ$ 的程度（当 $\phi = 60^\circ$ 时 $(1-\cos\phi)^2$ 取得最小值），二者联合引导三角形趋向等边形态，保证解析推导的数值稳定性。
 
-\noindent\textbf{总优化目标：}
-综合上述各项，最终的优化目标函数为：
+\noindent\textbf{总优化目标。}
+综合上述各项，最终优化目标函数为。
 \begin{equation}
     \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{rgb}} + \lambda_n \mathcal{L}_{\text{normal}} + \lambda_m \mathcal{L}_{\text{mesh}} + \lambda_t \mathcal{L}_{\text{tri}}
 \end{equation}
@@ -188,45 +198,48 @@
 
 \subsection{实验设置}
 
-\noindent\textbf{数据集：}
+\noindent\textbf{数据集。}
 实验选取了两个具有代表性的人体视频数据集，分别涵盖简单和复杂的动作场景，以全面评估模型的重建质量与泛化能力。
 
 \begin{itemize}
-    \item \textbf{PeopleSnapshot数据集}\cite{people-snapshot}：包含24名人体在摄像机前进行简单自转的视频序列。依照先前工作\cite{instant-avatar}的实验设定，本章选取4个代表性序列（female-3-casual, female-4-casual, male-3-casual, male-4-casual）进行评估。该数据集的训练与测试姿态分布差异较小，主要用于验证模型在分布内（In-Distribution）姿态下的重建质量。图像分辨率为 $540 \times 540$。
-    \item \textbf{X-Avatar数据集}\cite{x-avatar}：包含12名人体执行包含剧烈运动的复杂动作视频，并提供真实网格（Ground Truth Mesh）。该数据集的训练集与测试集之间存在显著的姿态分布差异，属于典型的训练分布外评估场景。本章选取4个包含不同体型与复杂运动的序列（00016, 00017, 00018, 00019）进行评估。图像分辨率为 $400 \times 600$。
+    \item \textbf{PeopleSnapshot数据集}\cite{people-snapshot}。该数据集包含24名人体在摄像机前进行简单自转的视频序列。依照先前工作\cite{instant-avatar}的实验设定，本章选取4个代表性序列（female-3-casual, female-4-casual, male-3-casual, male-4-casual）进行评估。该数据集训练与测试姿态分布差异较小，主要用于验证模型在分布内（In-Distribution）姿态下的重建质量。图像分辨率为 $540 \times 540$。
+    \item \textbf{X-Avatar数据集}\cite{x-avatar}。该数据集包含12名人体执行剧烈运动的复杂动作视频，并提供真实网格（Ground Truth Mesh）。其训练集与测试集之间存在显著姿态分布差异，属于典型训练分布外评估场景。本章选取4个包含不同体型和复杂运动的序列（00016, 00017, 00018, 00019）进行评估。图像分辨率为 $400 \times 600$。
 \end{itemize}
 
-\noindent\textbf{评估指标：}
-实验从图像质量和几何精度两个维度进行综合评估：
+\noindent\textbf{评估指标。}
+实验从图像质量和几何精度两个维度进行综合评估。
 \begin{itemize}
-    \item \textbf{图像质量指标}：采用峰值信噪比（PSNR）、结构相似性（SSIM）\cite{wang2004image}和感知图像相似度（LPIPS）\cite{zhang2018unreasonable}衡量渲染图像与真实图像在像素级和感知级的差异。
-    \item \textbf{几何精度指标}：采用法向误差（Normal Error）\cite{xiu2022icon}评估重建几何的表面朝向精度，其中法向图由预训练模型 Sapiens\cite{khirodkar2024sapiens} 生成，所有对比方法均使用相同的法向图以确保公平性。在提供真实网格的X-Avatar数据集上，进一步计算倒角距离（Chamfer Distance, CD）和点到面距离（Point-to-Surface Distance, P2S）\cite{xiu2022icon}，以量化重建几何与真实表面之间的偏差。法向误差乘以 $10^3$ 以便于展示。
+    \item \textbf{图像质量指标。} 采用峰值信噪比（PSNR）、结构相似性（SSIM）\cite{wang2004image}和感知图像相似度（LPIPS）\cite{zhang2018unreasonable}，衡量渲染图像与真实图像在像素级和感知级的差异。
+    \item \textbf{几何精度指标。} 采用法向误差（Normal Error）\cite{xiu2022icon}评估重建几何的表面朝向精度。其中法向图由预训练模型 Sapiens\cite{khirodkar2024sapiens} 生成，所有对比方法均使用相同法向图以确保公平性。在提供真实网格的X-Avatar数据集上，进一步计算倒角距离（Chamfer Distance, CD）和点到面距离（Point-to-Surface Distance, P2S）\cite{xiu2022icon}，以量化重建几何与真实表面之间的偏差。法向误差乘以 $10^3$ 以便展示。
 \end{itemize}
 
-\noindent\textbf{实验环境与参数设置：}
+\noindent\textbf{实验环境与参数设置。}
 本章方法基于PyTorch实现，所有实验均在单张NVIDIA RTX 3090 GPU上完成。针对每个人体，模型训练2000次迭代，使用Adam优化器\cite{kingma2015adam}，学习率设为 $1 \times 10^{-3}$。神经形状编码器 $E_s$ 采用16层多分辨率哈希编码\cite{mueller2022instant}。高斯不透明度固定为 $\alpha=1.0$，颜色由二阶球谐系数表示。高斯缩放参数中，法向厚度 $\epsilon = 10^{-3}$，面片与顶点高斯的平面内缩放系数 $\beta = \gamma = 0.5$。损失权重设置为 $\lambda_{\text{ssim}} = 0.2$，$\lambda_n = 0.05$，$\lambda_m = 0.01$，$\lambda_t = 0.01$。
+为保证对比公平性，除方法本身结构差异外，各对比方法均遵循其公开实现与官方推荐配置。涉及法向监督的实验中，统一使用同一预训练法向估计器生成监督信号，避免因外部先验差异引入额外偏置。
+
+\input{main/chapter3/tables/geo}
+\input{main/chapter3/tables/people_2x2}
 
 \subsection{对比实验}
 
-本章将所提方法与当前代表性的单目人体重建方法进行对比，包括基于NeRF的InstantAvatar\cite{instant-avatar}，以及基于3DGS的GART\cite{gart}、GomAvatar\cite{gom-avatar}和IHuman\cite{ihuman}。其中，基于3DGS的基线方法均采用自由优化或部分约束的高斯表示，在高斯属性与网格拓扑之间缺乏显式绑定。由于InstantAvatar原始实验未覆盖X-Avatar数据集，故仅在PeopleSnapshot上与其对比。在后续定量对比表格中，\textbf{加粗}表示最优结果，\underline{下划线}表示次优结果。
+本章将所提方法与代表性单目人体重建方法进行对比，包括基于NeRF的InstantAvatar\cite{instant-avatar}，以及基于3DGS的GART\cite{gart}、GomAvatar\cite{gom-avatar}和IHuman\cite{ihuman}。其中，3DGS基线方法采用自由优化或部分约束的高斯表示，高斯属性与网格拓扑之间缺少显式绑定。由于InstantAvatar原始实验未覆盖X-Avatar数据集，本章仅在PeopleSnapshot上与其对比。后续表格中，\textbf{加粗}表示最优结果，\underline{下划线}表示次优结果。
 
 \noindent\textbf{1. 几何精度评估。}
-表\ref{tab:geo}给出了各方法在几何指标上的定量对比。本章方法在所有几何指标上均取得最优结果，验证了解析推导机制对几何一致性的保障作用。具体而言，在X-Avatar数据集上，本章方法的法向误差相比最优基线（IHuman）降低了 \textbf{13.8\%}；在PeopleSnapshot上降低了 \textbf{17.9\%}。CD和P2S指标的一致下降进一步表明，将高斯几何属性锚定到网格拓扑能够有效抑制姿态驱动过程中的几何漂移，使重建表面与真实几何更为贴合。
-\input{main/chapter3/tables/geo}
-\input{main/chapter3/tables/people}
-\input{main/chapter3/tables/x-avatar}
+表\ref{tab:geo}给出了各方法在几何指标上的定量对比。本章方法在全部几何指标上均取得最优结果，说明解析推导机制能够有效保证几何一致性。在X-Avatar数据集上，本章方法的法向误差相较最优基线（IHuman）降低 \textbf{13.8\%}；在PeopleSnapshot数据集上降低 \textbf{17.9\%}。CD和P2S也同步下降，进一步说明将高斯几何属性锚定到网格拓扑可以抑制姿态驱动中的几何漂移，使重建表面更贴近真实几何。
 
 \noindent\textbf{2. 渲染质量评估。}
-表\ref{tab:people}与表\ref{tab:xavatar}分别给出了PeopleSnapshot与X-Avatar数据集上的PSNR、SSIM和LPIPS定量对比。在X-Avatar的训练分布外姿态评估中，本章方法在绝大多数序列上取得了最优的光度指标。值得注意的是，在PeopleSnapshot数据集上，GART在部分序列的PSNR上略优于本章方法。这是因为PeopleSnapshot的测试姿态与训练姿态分布接近，自由浮动的高斯更容易通过过拟合训练姿态获得较高的像素级指标；但这种拟合优势在面对训练分布外姿态时会迅速消失。相比之下，本章方法通过牺牲少量分布内拟合灵活性，换取了在复杂姿态下更为稳定的结构保持能力。
+表\ref{tab:people}与表\ref{tab:xavatar}分别给出了PeopleSnapshot与X-Avatar数据集上的峰值信噪比、结构相似性和感知距离结果。在X-Avatar训练分布外姿态评估中，本章方法在绝大多数序列上取得最优光度指标。需要说明的是，在PeopleSnapshot数据集上，GART在部分序列的峰值信噪比略优于本章方法。主要原因是PeopleSnapshot测试姿态与训练姿态分布接近，自由浮动高斯更容易通过过拟合获得较高像素级指标。但该优势在训练分布外姿态下难以保持。相比之下，本章方法牺牲少量分布内拟合灵活性，换取了复杂姿态下更稳定的结构保持能力。
 
-\begin{figure}[b]
+\input{main/chapter3/tables/x-avatar_2x2}
+
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\linewidth]{main/chapter3/figures/com-people-2.pdf}
+    \includegraphics[width=0.9\linewidth]{main/chapter3/figures/com-people-2.pdf}
     \caption{PeopleSnapshot数据集训练分布外姿态下的高斯分布对比}
     \label{fig:com-people}
 \end{figure}
 
-图\ref{fig:com-people}和图\ref{fig:com-xavatar}给出了训练分布外姿态下的定性对比。从图\ref{fig:com-people}中可以观察到，基线方法GART和IHuman在姿态变化时出现了明显的高斯脱离现象，表现为漂浮的高斯点云和表面空洞；而本章方法的高斯分布始终与网格保持一致的结构化布局。图\ref{fig:com-xavatar}进一步展示了更具挑战性的X-Avatar数据集上的RGB和法向对比，本章方法在四肢等高形变区域仍能保持清晰的表面细节与一致的法向朝向。
+图\ref{fig:com-people}和图\ref{fig:com-xavatar}给出了训练分布外姿态下的定性对比。由图\ref{fig:com-people}可见，基线方法GART和IHuman在姿态变化时出现明显高斯脱离，表现为漂浮高斯点云和表面空洞。本章方法的高斯分布与网格保持一致的结构化布局。图\ref{fig:com-xavatar}进一步展示了更具挑战性的X-Avatar结果，本章方法在四肢等高形变区域仍能保持清晰表面细节和一致法向朝向。
 
 \begin{figure}[t]
     \centering
@@ -237,52 +250,60 @@
 
 \subsection{消融实验}
 
-为验证各核心模块的贡献，本章在X-Avatar数据集的00019序列上进行了系统的消融实验，逐一移除面片高斯、顶点高斯和等边正则化，并分析其对性能的影响。表\ref{tab:ablation}给出了定量消融结果，图\ref{fig:ablation}展示了对应的可视化对比。各变体的具体表现分析如下：
+为验证各核心模块的贡献，本章在X-Avatar数据集00019序列上进行了系统消融实验，逐一移除面片高斯、顶点高斯和等边正则化，并分析其对性能的影响。表\ref{tab:ablation}给出了定量消融结果，图\ref{fig:ablation}展示了对应可视化对比。各变体表现如下。
 
 \begin{itemize}
-    \item \textbf{去除面片高斯}：仅保留顶点高斯，此时将其缩放设为可学习参数以部分弥补覆盖不足。结果表明，缺少面片高斯的结构化覆盖后，顶点高斯需大幅增大缩放值以弥补表面空隙，导致部分高斯基元超出所在面片的范围，产生不规则的覆盖模式。PSNR下降至26.89，法向误差增至2.143，说明面片高斯对建立粗粒度的几何完整性不可或缺。
-    \item \textbf{去除顶点高斯}：仅使用面片高斯时虽然整体覆盖得到保证，但在面片交界处和高频细节区域出现明显的不连续性和空洞现象，PSNR下降至25.67，法向误差升至2.687。该结果验证了顶点高斯在刻画局部细节和改善接缝处连续性方面的互补作用。
-    \item \textbf{去除等边正则化}：保留双高斯结构但移除网格质量约束后，网格三角面片在关节区域发生显著退化，内切圆半径趋近于零导致数值不稳定，进而使高斯缩放尺度受到退化网格的直接影响，渲染图像出现可见伪影，重建网格呈现凌乱不规则的形态。法向误差从1.772升至1.834，说明等边正则化对维持解析推导的数值稳定性至关重要。
-    \item \textbf{完整模型}：同时包含面片高斯、顶点高斯和等边正则化，在所有指标上均取得最优结果（PSNR=28.11，Normal=1.772，CD=0.111），验证了各模块的协同作用。
+    \item \textbf{去除面片高斯。} 仅保留顶点高斯，并将其缩放设为可学习参数，以部分弥补覆盖不足。结果表明，缺少面片高斯结构化覆盖后，顶点高斯需显著增大缩放值来填补表面空隙，部分高斯基元会超出所在面片范围并形成不规则覆盖。峰值信噪比下降至26.89，法向误差升至2.143，说明面片高斯对粗粒度几何完整性不可或缺。
+    \item \textbf{去除顶点高斯。} 仅使用面片高斯时，整体覆盖虽能保持，但在面片交界和高频细节区域出现明显不连续与空洞。峰值信噪比下降至25.67，法向误差升至2.687。该结果验证了顶点高斯在刻画局部细节和改善接缝连续性方面的互补作用。
+    \item \textbf{去除等边正则化。} 保留双高斯结构但移除网格质量约束后，网格三角面片在关节区域会明显退化。内切圆半径趋近于零后，数值稳定性下降，高斯缩放尺度受退化网格直接影响，渲染图像出现可见伪影，重建网格也更不规则。法向误差从1.772升至1.834，说明等边正则化对维持解析推导稳定性十分关键。
+    \item \textbf{完整模型。} 同时包含面片高斯、顶点高斯和等边正则化，在所有指标上均取得最优结果（PSNR=28.11，Normal=1.772，CD=0.111），验证了各模块协同作用。
 \end{itemize}
 
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.8\linewidth]{main/chapter3/figures/ablation.pdf}
+    \includegraphics[width=0.85\linewidth]{main/chapter3/figures/ablation.pdf}
     \caption{X-Avatar数据集（序列00019）上的消融可视化结果}
     \label{fig:ablation}
 \end{figure}
+
 \input{main/chapter3/tables/ablation}
 
 此外，本章还对等边正则化的权重 $\lambda_t$ 进行了敏感性分析，从而确定最优的正则化权重。实验同样在X-Avatar数据集上进行，结果如表\ref{tab:lambda}所示。当 $\lambda_t = 0$（即完全去除等边正则化）时，PSNR降至27.32，法向误差升至1.93，再次印证了该正则化项的必要性。随着 $\lambda_t$ 从0.005增至0.01，各项指标持续改善，在 $\lambda_t = 0.01$ 处取得最优平衡。当 $\lambda_t$ 进一步增大至0.02时，过强的几何约束开始抑制形状编码器对衣物细节的拟合能力，SSIM略有下降。
 
 \input{main/chapter3/tables/lambda}
+\input{main/chapter3/tables/efficient}
+
 \subsection{计算效率分析}
 
 表\ref{tab:efficiency}从高斯数量、训练时间、模型大小和渲染速度四个维度，将本章方法与IHuman进行了计算效率的对比分析（以PeopleSnapshot数据集 male-3-casual序列为例）。
-\input{main/chapter3/tables/efficient}
+
+
 本章方法使用82,658个高斯基元（$M$个面片高斯 $+$ $N$个顶点高斯），仅为IHuman所用220,416个高斯的37.5\%。高斯数量的大幅减少直接带来了光栅化阶段计算开销的降低，使渲染速度从44 FPS提升至50 FPS。此外，由于几何属性 $(\boldsymbol{\mu}, \mathbf{R}, \mathbf{s})$ 由网格解析计算而非显式存储，模型的存储开销仅包含形状编码器参数与球谐系数，检查点大小从58.26 MB减少至32.36 MB（降低44.5\%）。在训练时间方面，两者均约为2分钟，说明解析推导的计算开销可以忽略不计。在GPU显存占用方面，本章方法在PeopleSnapshot和X-Avatar上分别仅需1.9 GB和3.2 GB，相比IHuman（3.7 GB和5.2 GB）显著降低，这得益于固定高斯数量消除了自适应密度化带来的内存增长。
+上述结果说明，本章方法在性能与开销之间取得了较好平衡。对实际系统部署而言，较低显存占用和较小模型体积意味着更高的硬件适配性，可为后续移动端或多实例并发场景预留更充足的资源空间。
 
 \subsection{鲁棒性与泛化能力分析}
 
-\noindent\textbf{1. 姿态噪声鲁棒性。}
-在实际应用中，SMPL姿态参数通常由姿态估计算法自动获取，不可避免地包含一定程度的估计误差。姿态参数的噪声会传播至网格变形，进而影响高斯属性的计算。为评估本章方法在姿态噪声下的稳定性，在PeopleSnapshot数据集（male-3-casual序列）上进行了压力测试：向姿态参数中注入不同强度的高斯噪声 $\mathcal{N}(0, \sigma^2)$（$\sigma \in \{0.005, 0.01, 0.02\}$），并与IHuman进行对比。结果如表\ref{tab:noise}所示，表格中的$\Delta$表示变化幅度。
+\noindent\textbf{姿态噪声鲁棒性。}
+在实际应用中，SMPL姿态参数通常由姿态估计算法自动获取，不可避免地存在估计误差。姿态噪声会传递到网格形变，并进一步影响高斯属性计算。为评估本章方法在姿态噪声下的稳定性，本章在PeopleSnapshot数据集（male-3-casual序列）上进行压力测试，向姿态参数注入不同强度的高斯噪声 $\mathcal{N}(0, \sigma^2)$（$\sigma \in \{0.005, 0.01, 0.02\}$），并与IHuman对比。结果见表\ref{tab:noise}，其中$\Delta$表示变化幅度。
+
 \input{main/chapter3/tables/stress}
 
-可以观察到，随着噪声强度增大，两种方法的性能均有所下降，但本章方法的退化幅度始终显著小于IHuman。以 $\sigma=0.01$ 为例，本章方法的PSNR仅下降11.1\%，而IHuman下降了15.5\%；在法向误差上，本章方法增幅为31.4\%，IHuman则高达54.4\%。这一差异的根本原因在于：本章方法中高斯属性由网格几何解析推导，姿态噪声引起的网格形变是连续且平滑的，高斯属性随之做出一致的平滑响应；而IHuman的高斯属性是独立优化的固定参数，当输入姿态偏离训练分布时，这些参数无法自适应调整，导致高斯与网格之间产生明显的脱离与错位。
-
-\begin{figure}[b]
+\begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{main/chapter3/figures/wild.pdf}
     \caption{自然场景视频的重建与失败案例分析}
     \label{fig:wild}
 \end{figure}
 
-\noindent\textbf{2. 自然场景泛化与失败案例分析。}
-为进一步验证实际应用能力，本章还在未受控的自然场景视频上进行了测试。与实验室环境的标准数据集不同，自然场景视频面临背景复杂、光照不可控、动作随意且姿态估计精度较低等综合挑战。如图\ref{fig:wild}(a)所示，本章方法在NeuMan\cite{neuman}数据集的自然光照场景下能够重建出结构完整的人体模型，具有准确的几何拓扑结构；图\ref{fig:wild}(b)进一步展示了在UBC-Fashion\cite{zablotskaia2019dwnet}数据集上对穿着宽松裙装的人体的重建结果，通过学习的顶点偏移量 $\Delta\mathbf{V}$，模型有效捕捉了裙摆的几何轮廓。上述结果表明，拓扑绑定表示对姿态估计误差具有内在的鲁棒性——姿态参数的扰动引起网格的连续形变，解析推导的高斯属性随之平滑调整，不会产生自由优化方法中因参数固定而导致的脱离与错位。
+随着噪声强度增大，两种方法性能均下降，但本章方法退化幅度始终小于IHuman。以 $\sigma=0.01$ 为例，本章方法峰值信噪比下降11.1\%，IHuman下降15.5\%；在法向误差上，本章方法增幅为31.4\%，IHuman为54.4\%。这一差异说明，本章方法的高斯属性由网格几何解析推导后，能够随网格连续形变做出平滑响应。相比之下，IHuman的高斯属性是独立优化得到的固定参数，当输入姿态偏离训练分布时难以自适应调整，容易出现高斯与网格脱离和错位。
 
-然而，图\ref{fig:wild}(c)揭示了本章方法的一个典型失败案例：当对图\ref{fig:wild}(b)中的裙装人体施加抬腿驱动时，裙摆区域出现了明显的拓扑分裂现象。这是因为SMPL模型的固定拓扑假设裙摆内侧的网格面片始终相连，而真实的抬腿动作会使双腿间的裙摆自然分开，这种拓扑结构的变化超出了固定网格所能表达的范围。该失败案例将在本章小结中作进一步讨论。
+\noindent\textbf{自然场景泛化与失败案例分析。}
+为进一步验证实际应用能力，本章还在未受控自然场景视频上进行了测试。与实验室标准数据集相比，自然场景视频通常具有背景复杂、光照不可控、动作随意、姿态估计精度较低等挑战。如图\ref{fig:wild}(a)所示，本章方法在NeuMan\cite{neuman}自然光照场景下可重建结构完整的人体模型，并保持较准确的几何拓扑。图\ref{fig:wild}(b)展示了UBC-Fashion\cite{zablotskaia2019dwnet}中宽松裙装人体的重建结果。通过学习顶点偏移量 $\Delta\mathbf{V}$，模型可以较好捕捉裙摆几何轮廓。上述结果说明，拓扑绑定表示对姿态估计误差具有较好鲁棒性，姿态扰动引起网格连续形变时，高斯属性也能同步平滑调整，从而减少自由优化方法中常见的脱离与错位。
+
+然而，图\ref{fig:wild}(c)也给出了一个典型失败案例。当对图\ref{fig:wild}(b)中的裙装人体施加抬腿驱动时，裙摆区域出现明显拓扑分裂。原因在于SMPL固定拓扑默认裙摆内侧网格面片始终相连，而真实抬腿动作会使双腿间裙摆自然分开，这类拓扑变化超出了固定网格的表达范围。该问题将在本章小结中进一步讨论。
+
+为进一步验证方法在训练分布外姿态下的稳定性，图\ref{fig:people-da-t-pose}展示了PeopleSnapshot数据集上Da-pose和T-pose两种典型驱动结果，这两种姿态与训练阶段的自转动作差异显著。可以观察到，基线方法在此类姿态下普遍出现高斯散乱和表面缺失，而本章方法在不同人体上均保持了结构完整的渲染效果。图\ref{fig:com-people-novel}进一步给出了更多训练分布外姿态下的定性对比结果，整体趋势与前述分析一致，进一步说明本章方法在复杂姿态变化下具有更稳定的几何与渲染表现。
 
 \begin{figure}[t]
     \centering
@@ -298,21 +319,10 @@
     \label{fig:com-people-novel}
 \end{figure}
 
-\subsection{更多定性结果}
-
-图\ref{fig:people-da-t-pose}展示了PeopleSnapshot数据集上Da-pose和T-pose两种典型训练分布外姿态的驱动结果，这两种姿态与训练时的自转动作差异显著。可以观察到，基线方法在这些姿态下普遍出现高斯散乱和表面缺失，而本章方法在不同人体上均保持了结构完整的渲染效果。图\ref{fig:com-people-novel}进一步给出了本章方法与基线方法在更多训练分布外驱动姿态上的对比，本章方法在各姿态下均展现出更稳定的渲染质量。
-% 图\ref{fig:com-xavatar-supple}给出了X-Avatar数据集上的更多定性结果，可以观察到类似的趋势，进一步验证了拓扑绑定机制的泛化性。
-% \begin{figure}[t]
-%     \centering
-%     \includegraphics[width=\linewidth]{main/chapter3/figures/com-avatar-supple.pdf}
-%     \caption{X-Avatar数据集上的更多定性对比结果}
-%     \label{fig:com-xavatar-supple}
-% \end{figure}
-
-
 \section{本章小结}
-本章提出了一种基于拓扑绑定的三维高斯人体重建方法，针对现有3DGS方法中高斯几何属性与网格拓扑解耦导致的姿态泛化能力不足问题，给出了一种解析推导的解决方案。该方法以可变形SMPL网格为几何载体，通过神经形状编码器捕捉个性化衣物细节；在此基础上，将高斯的位置、旋转和缩放属性从可学习的自由参数转变为由网格局部几何特征（法向、内切圆半径、边长）解析确定的确定性函数，从原理上保证了高斯基元与人体表面的拓扑一致性。此外，针对LBS驱动下可能出现的网格退化问题，本章设计了等边正则化项以维护三角形质量，确保解析映射在复杂姿态下的数值稳定性。
+本章提出了一种基于拓扑绑定的三维高斯人体重建方法，针对现有3DGS方法中高斯几何属性与网格拓扑解耦导致的姿态泛化不足问题，给出了解析推导方案。该方法以可变形SMPL网格为几何载体，通过神经形状编码器捕捉个体衣物细节，并将高斯的位置、旋转和缩放从可学习自由参数改为由网格局部几何特征（法向、内切圆半径、边长）解析确定。该设计从机制上保证了高斯基元与人体表面的拓扑一致性。针对LBS驱动下可能出现的网格退化，本章进一步加入等边正则化项以维持三角形质量，保证复杂姿态下解析映射的数值稳定性。
 
-在PeopleSnapshot和X-Avatar两个数据集上的实验表明，本章方法在几何精度方面取得了显著提升（法向误差分别降低17.9\%和13.8\%），同时在训练分布外姿态的渲染质量上也展现出明显优势。消融实验证实了面片高斯、顶点高斯和等边正则化三个模块的协同作用缺一不可，超参数敏感性分析表明方法对正则化权重的选取具有良好的稳定性。姿态噪声鲁棒性实验进一步验证了拓扑绑定机制在姿态估计存在误差时的优势。计算效率分析表明，本章方法在高斯数量、模型大小和显存占用方面均优于基线方法，且保持了实时渲染能力。
+在PeopleSnapshot和X-Avatar两个数据集上的实验表明，本章方法显著提升了几何精度，法向误差分别降低17.9\%和13.8\%。在训练分布外姿态下，渲染质量也表现出明显优势。消融实验表明，面片高斯、顶点高斯和等边正则化三部分缺一不可。超参数敏感性分析说明方法对正则化权重具有较好稳定性。姿态噪声实验进一步验证了拓扑绑定机制在姿态估计误差存在时的有效性。计算效率分析显示，本章方法在高斯数量、模型大小和显存占用方面均优于基线，并保持实时渲染能力。
+综合来看，本章方法不仅在指标上优于基线，也在机制层面解释了性能提升的来源，即通过“网格几何到高斯属性”的确定性映射降低了姿态变化带来的不确定性。
 
-同时，本章方法存在以下局限性值得讨论。首先，本章方法建立在SMPL模型的固定拓扑之上，通过学习顶点偏移量 $\Delta\mathbf{V}$ 虽然能够表达丰富的衣物几何细节，但无法建模拓扑结构本身的变化。如图\ref{fig:wild}(c)所示，当穿着宽松裙装的人体执行抬腿动作时，裙摆区域出现拓扑分裂，这是因为固定拓扑的网格无法表达运动过程中衣物的自然分开与分离。更一般地，当衣物的运动模式与人体骨骼驱动的假设严重偏离时，线性混合蒙皮无法准确描述其形变，导致重建结果与真实衣物形态之间出现较大偏差。其次，解析推导的高斯表示在保证几何鲁棒性的同时，相较于自由优化的方法在高频纹理细节的还原能力上有所折衷——这是拓扑一致性与拟合灵活性之间的固有矛盾。未来可考虑将本章的拓扑绑定框架与纹理增强技术（如基于扩散模型的超分辨率方法）或姿态依赖的外观优化策略相结合，在保持几何稳定性的前提下进一步提升外观细节的精细程度。此外，本章方法基于单目视频输入，对于始终被遮挡而从未在训练视频中出现的区域（如人体背面），模型只能依赖规范空间中的几何插值生成合理的表面，其外观细节难以保证。当发生严重的自遮挡导致姿态估计算法失效时，错误的姿态参数会传播至网格变形，进而影响整体重建质量。
+本章方法也存在一些局限。首先，方法建立在SMPL固定拓扑上。虽然学习顶点偏移量 $\Delta\mathbf{V}$ 能表达较丰富的衣物几何细节，但无法建模拓扑本身变化。如图\ref{fig:wild}(c)所示，宽松裙装人体在抬腿动作下会出现裙摆拓扑分裂，固定拓扑网格难以表达衣物在运动中的自然分离。更一般地，当衣物运动模式与骨骼驱动假设明显不一致时，线性混合蒙皮难以准确描述形变，重建结果与真实衣物形态会出现偏差。其次，解析推导高斯表示在提升几何鲁棒性的同时，相比自由优化方法在高频纹理细节恢复上存在一定折衷，这是拓扑一致性与拟合灵活性之间的客观权衡。未来可将本章拓扑绑定框架与纹理增强方法（如基于扩散模型的超分辨率）或姿态相关外观优化策略结合，在保证几何稳定性的前提下进一步提升外观细节。最后，本章方法基于单目视频输入。对于训练视频中长期不可见区域（如人体背面），模型主要依赖规范空间几何插值生成表面，外观细节难以保证。当严重自遮挡导致姿态估计失效时，姿态误差会传递到网格变形并影响整体重建质量。

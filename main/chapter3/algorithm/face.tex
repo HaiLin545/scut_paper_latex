@@ -1,12 +1,15 @@
-\begin{algorithm}[t]
-    \caption{面片高斯属性的解析推导}
+\begin{algorithm}[htbp]
+    \begin{spacing}{1.4}
+    \caption{面片高斯属性解析推导算法}
     \label{alg:face_gaussian}
-    \textbf{输入}：姿态网格面片顶点 $\mathbf{p}_1, \mathbf{p}_2, \mathbf{p}_3 \in \mathbb{R}^3$\\
-    \textbf{超参数}：$\beta = 0.5$，$\epsilon = 10^{-3}$\\
-    \textbf{输出}：$\boldsymbol{\mu}_f \in \mathbb{R}^3$，$\mathbf{R}_f \in SO(3)$，$\mathbf{s}_f \in \mathbb{R}^3$\\
+    \algsetup{linenosize=\normalsize}
     \begin{algorithmic}[1]
+        \REQUIRE 姿态网格面片顶点 $\mathbf{p}_1, \mathbf{p}_2, \mathbf{p}_3 \in \mathbb{R}^3$；超参数 $\beta = 0.5$，$\epsilon = 10^{-3}$
+        \ENSURE $\boldsymbol{\mu}_f \in \mathbb{R}^3$，$\mathbf{R}_f \in SO(3)$，$\mathbf{s}_f \in \mathbb{R}^3$
         \STATE \textcolor{gray}{// 计算对边长度}
-        \STATE $l_1 \leftarrow \|\mathbf{p}_2 - \mathbf{p}_3\|$，$l_2 \leftarrow \|\mathbf{p}_3 - \mathbf{p}_1\|$，$l_3 \leftarrow \|\mathbf{p}_1 - \mathbf{p}_2\|$
+        \STATE $l_1 \leftarrow \|\mathbf{p}_2 - \mathbf{p}_3\|$
+        \STATE $l_2 \leftarrow \|\mathbf{p}_3 - \mathbf{p}_1\|$
+        \STATE $l_3 \leftarrow \|\mathbf{p}_1 - \mathbf{p}_2\|$
         \STATE \textcolor{gray}{// 位置：边长加权内心}
         \STATE $\boldsymbol{\mu}_f \leftarrow (l_1 \mathbf{p}_1 + l_2 \mathbf{p}_2 + l_3 \mathbf{p}_3) / (l_1 + l_2 + l_3)$
         \STATE \textcolor{gray}{// 旋转：构建局部正交坐标系}
@@ -18,6 +21,7 @@
         \STATE $A \leftarrow \frac{1}{2}\|(\mathbf{p}_2 - \mathbf{p}_1) \times (\mathbf{p}_3 - \mathbf{p}_1)\|$
         \STATE $r \leftarrow A / ((l_1 + l_2 + l_3) / 2)$
         \STATE $\mathbf{s}_f \leftarrow (\beta \cdot r,\; \beta \cdot r,\; \epsilon)$
-        \STATE \textbf{return} $\boldsymbol{\mu}_f,\; \mathbf{R}_f,\; \mathbf{s}_f$
+        \STATE \textbf{返回} $\boldsymbol{\mu}_f,\; \mathbf{R}_f,\; \mathbf{s}_f$
     \end{algorithmic}
+    \end{spacing}
 \end{algorithm}
