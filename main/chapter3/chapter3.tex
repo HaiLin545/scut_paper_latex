@@ -2,7 +2,7 @@
 
 \section{引言}
 
-基于3D高斯泼溅（3DGS\cite{3dgs}）的人体重建方法兼具显式表示和实时渲染能力，已成为单目视频数字化身重建的重要技术路线，近期也出现了多项代表性工作\cite{gart, gaussian-avatar, gom-avatar, ihuman}。但现有方法在姿态泛化方面仍存在明显不足。如图\ref{fig:motivation}所示，模型在训练姿态下通常可以保持较好的高斯分布；当输入训练集中未出现的姿态时，高斯基元会偏离网格表面，进而出现表面空洞和几何伪影，渲染质量明显下降。该问题限制了高斯数字化身在交互场景中的实际应用。
+基于三维高斯溅射（3DGS\cite{3dgs}）的人体重建方法兼具显式表示和实时渲染能力，已成为单目视频数字化身重建的重要技术路线，近期也出现了多项代表性工作\cite{gart, gaussian-avatar, gom-avatar, ihuman}。但现有方法在姿态泛化方面仍存在明显不足。如图\ref{fig:motivation}所示，模型在训练姿态下通常可以保持较好的高斯分布；当输入训练集中未出现的姿态时，高斯基元会偏离网格表面，进而出现表面空洞和几何伪影，渲染质量明显下降。该问题限制了高斯数字化身在交互场景中的实际应用。
 
 \begin{figure}[b]
     \centering
@@ -35,16 +35,16 @@
 因此，本章核心问题可表述为，如何构建映射函数 $\Phi: \mathcal{M}(\boldsymbol{\theta}) \rightarrow \{\mathbf{R}_i, \mathbf{s}_i\}$，使高斯基元几何属性不再是自由变量，而由变形后人体网格 $\mathcal{M}(\boldsymbol{\theta})$ 的局部微分几何性质解析确定，从而在原理上保证模型在任意姿态下的拓扑一致性。
 围绕该问题，本章的技术目标可进一步分解为三点。第一，构建随姿态变化稳定更新的局部几何描述，使高斯属性能够与网格形变同步变化。第二，在保证表面覆盖的同时兼顾细节表达，避免仅依赖单一高斯类型导致的覆盖空洞或细节不足。第三，在训练中控制网格退化带来的数值不稳定，确保解析推导在复杂动作下仍可稳定工作。
 
-\section{3D高斯泼溅基础}
-本章提出的方法建立在3D高斯泼溅（3D Gaussian Splatting, 3DGS）\cite{3dgs}的场景表示基础之上。作为一种新兴的显式场景表示技术，3DGS结合了点云的灵活性与体渲染的可微性，能够实时渲染高质量的复杂场景。本节将简要回顾3DGS的核心数学表述、投影机制及光栅化过程。
+\section{三维高斯溅射基础}
+本章提出的方法建立在三维高斯溅射（3D Gaussian Splatting, 3DGS）\cite{3dgs}的场景表示基础之上。作为一种新兴的显式场景表示技术，3DGS结合了点云的灵活性与体渲染的可微性，能够实时渲染高质量的复杂场景。本节将简要回顾3DGS的核心数学表述、投影机制及光栅化过程。
 
-具体而言，3DGS将场景建模为一组各向异性的3D高斯基元 $\mathcal{G} = \{G_i\}_{i=1}^N$。每个基元 $G_i$ 在世界坐标系中由中心位置（均值）$\boldsymbol{\mu}_i \in \mathbb{R}^3$ 和协方差矩阵 $\boldsymbol{\Sigma}_i \in \mathbb{R}^{3 \times 3}$ 定义。其在空间任意一点 $\mathbf{x}$ 的概率密度函数如下所示。
+具体而言，3DGS将场景建模为一组各向异性的三维高斯基元 $\mathcal{G} = \{G_i\}_{i=1}^N$。每个基元 $G_i$ 在世界坐标系中由中心位置（均值）$\boldsymbol{\mu}_i \in \mathbb{R}^3$ 和协方差矩阵 $\boldsymbol{\Sigma}_i \in \mathbb{R}^{3 \times 3}$ 定义。其在空间任意一点 $\mathbf{x}$ 的概率密度函数如下所示。
 \begin{equation}
     G_i(\mathbf{x}) = \exp\left(-\frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^\top \boldsymbol{\Sigma}_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i)\right)
 \end{equation}
 为了保证协方差矩阵 $\boldsymbol{\Sigma}_i$ 在优化过程中的半正定性，通常将其分解为缩放矩阵 $\mathbf{S}_i \in \mathbb{R}^3$ 和旋转矩阵 $\mathbf{R}_i \in SO(3)$，即 $\boldsymbol{\Sigma}_i = \mathbf{R}_i \mathbf{S}_i \mathbf{S}_i^\top \mathbf{R}_i^\top$。其中，缩放矩阵 $\mathbf{S}_i$ 为对角矩阵，对角线元素为缩放向量 $\mathbf{s}_i = (s_x, s_y, s_z)$；旋转矩阵 $\mathbf{R}_i$ 通常由四元数 $\mathbf{q}_i$ 参数化，以避免万向节死锁。此外，每个高斯基元还包含用于表征外观颜色的球谐系数（Spherical Harmonics, SH）$\mathbf{c}_i$，以及控制透明度的不透明度参数 $\alpha_i \in [0, 1]$。
 
-为了将3D高斯投影到2D图像平面，3DGS采用基于EWA（Elliptical Weighted Average）~\cite{zwicker2001ewa}的泼溅算法。给定视图变换矩阵 $\mathbf{W}$ 和投影矩阵，3D高斯在像平面上的投影仍为2D高斯分布。其2D协方差矩阵 $\boldsymbol{\Sigma}^{2D}$ 可通过雅可比矩阵 $\mathbf{J}$ 近似计算。
+为了将三维高斯投影到2D图像平面，3DGS采用基于EWA（Elliptical Weighted Average）~\cite{zwicker2001ewa}的溅射算法。给定视图变换矩阵 $\mathbf{W}$ 和投影矩阵，三维高斯在像平面上的投影仍为2D高斯分布。其2D协方差矩阵 $\boldsymbol{\Sigma}^{2D}$ 可通过雅可比矩阵 $\mathbf{J}$ 近似计算。
 \begin{equation}
     \boldsymbol{\Sigma}^{2D} = \mathbf{J} \mathbf{W} \boldsymbol{\Sigma} \mathbf{W}^\top \mathbf{J}^\top
 \end{equation}

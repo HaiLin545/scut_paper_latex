@@ -1,6 +1,6 @@
 % 表：消融实验结果
 \begin{table}[h]
-    \centering
+    \centering\small
     \caption{消融实验定量结果（CLoSe）}
     \label{tab:ch4-ablation}
     \renewcommand{\arraystretch}{1.2}
@@ -8,12 +8,14 @@
     \begin{tabular}{l *{4}{c}}
         \toprule
         \textbf{实验设置}
-        & \textbf{CD (cm)}$\downarrow$ & \textbf{F-Score}$\uparrow$ & \textbf{SSR}$\uparrow$ & \textbf{Val. Rate}$\uparrow$ \\
+        & \textbf{倒角距离 (cm)}$\downarrow$ & \textbf{F-Score}$\uparrow$ & \textbf{仿真成功率}$\uparrow$ & \textbf{结构合法率}$\uparrow$ \\
         \midrule
         (a) 去除身体测量先验
         & 4.201 & 0.741 & 81.3\% & 88.2\% \\
         (b) 使用原生格式
         & 1.890 & 0.892 & 96.2\% & 98.0\% \\
+        (c) 去除分步推理工作流
+        & 2.384 & 0.854 & 91.7\% & 94.1\% \\
         \midrule
         完整模型（本章方法）
         & \textbf{1.621} & \textbf{0.896} & \textbf{98.4\%} & \textbf{100\%} \\
