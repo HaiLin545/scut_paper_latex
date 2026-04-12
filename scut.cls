@@ -41,7 +41,7 @@
 
 % 字体设置
 \setmainfont{Times New Roman}
-\setCJKmainfont{SimSun}[AutoFakeBold=4.5]
+\setCJKmainfont{SimSun}[AutoFakeBold=4]
 \setCJKfamilyfont{zhsong}{SimSun}[AutoFakeBold=4.5]
 
 
