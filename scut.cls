@@ -34,6 +34,8 @@
   gbpub=false,
   gbnamefmt = lowercase
 ]{biblatex} %
+% 将析出文献题名与来源之间的分隔符由“//”改为句号
+\renewbibmacro*{in:}{\setunit{\adddot\space}}
 \RequirePackage[titles]{tocloft}
 
 % 页面边距
