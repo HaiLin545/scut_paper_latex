@@ -9,28 +9,12 @@
 
     \pagestyle{empty}
     \makecover
-    \clearpage
-    \thispagestyle{empty}
-    \null
-    \clearpage
-
+    \makeemptypage
     \makeengcover
-    \clearpage
-    \thispagestyle{empty}
-    \null
-    \clearpage
-
+    \makeemptypage
     \maketitlepage
-    \clearpage
-    \thispagestyle{empty}
-    \null
-    \clearpage
-
+    \makeemptypage
     \makedeclaration
-    \clearpage
-    \thispagestyle{empty}
-    \null
-    \clearpage
 
     \frontmatter
     \pagestyle{plain}
@@ -58,6 +42,9 @@
     % 参考文献
     \printbibliography[heading=bibintoc]
     \include{main/_back/pub}
-    % \include{main/_back/thanks}
+    \include{main/_back/thanks}
+
+    \clearpage
+    \includepdf[pages=-, pagecommand={\thispagestyle{empty}}]{main/_back/审查表.pdf}
 
 \end{document}

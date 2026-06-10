@@ -185,6 +185,13 @@
     \includepdf[pages=-, pagecommand={\thispagestyle{empty}}]{main/_front/原创性声明.pdf}
 }
 
+\newcommand{\makeemptypage}{
+    \clearpage
+    \thispagestyle{empty}
+    \null
+    \clearpage
+}
+
 % 目录
 \setlength{\cftbeforechapskip}{0pt}  % 章前间距
 \setlength{\cftbeforesecskip}{0pt}   % 节前间距
