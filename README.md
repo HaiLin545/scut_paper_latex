@@ -4,3 +4,9 @@
 
 部分内容参考 [SCUT\_thesis](https://github.com/mengchaoheng/SCUT_thesis.git)。
 
+
+# 环境配置
+1. 安装Texlive
+2. 安装Latex Workshop vscode插件
+
+# 
