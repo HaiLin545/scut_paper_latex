@@ -128,6 +128,7 @@
 \def\scut@cauthor{}              % 中文作者姓名
 \def\scut@cmajor{}               % 中文专业名称
 \def\scut@csupervisor{}          % 中文指导教师
+\def\scut@ccosupervisor{}        % 中文联合指导教师
 \def\scut@college{}              % 学院名称
 \def\scut@submitdate{}           % 论文提交日期
 \def\scut@thesisname{}           % 论文类型名称
@@ -135,6 +136,7 @@
 \def\scut@etitle{}               % 英文标题
 \def\scut@eauthor{}              % 英文作者姓名
 \def\scut@esupervisor{}          % 英文指导教师
+\def\scut@ecosupervisor{}        % 英文联合指导教师
 \def\scut@edegree{Master}        % 英文学位类型
 % 扉页/提名页信息
 \def\scut@classcode{}            % 分类号
@@ -154,6 +156,7 @@
 \renewcommand{\author}[1]{\def\scut@cauthor{#1}}
 \newcommand{\major}[1]{\def\scut@cmajor{#1}}
 \newcommand{\supervisor}[1]{\def\scut@csupervisor{#1}}
+\newcommand{\cosupervisor}[1]{\def\scut@ccosupervisor{#1}}
 \newcommand{\college}[1]{\def\scut@college{#1}}
 \newcommand{\submitdate}[1]{\def\scut@submitdate{#1}}
 \newcommand{\thesisname}[1]{\def\scut@thesisname{#1}}
@@ -161,6 +164,7 @@
 \newcommand{\etitle}[1]{\def\scut@etitle{#1}}
 \newcommand{\eauthor}[1]{\def\scut@eauthor{#1}}
 \newcommand{\esupervisor}[1]{\def\scut@esupervisor{#1}}
+\newcommand{\ecosupervisor}[1]{\def\scut@ecosupervisor{#1}}
 \newcommand{\edegree}[1]{\def\scut@edegree{#1}}
 % 扉页/提名页信息设置命令
 \newcommand{\classcode}[1]{\def\scut@classcode{#1}}
@@ -179,11 +183,6 @@
 \input{main/_front/eng_cover}
 \input{main/_front/scut_titlepage}
 
-% 原创性声明
-\newcommand{\makedeclaration}{
-    \clearpage
-    \includepdf[pages=-, pagecommand={\thispagestyle{empty}}]{main/_front/原创性声明.pdf}
-}
 
 \newcommand{\makeemptypage}{
     \clearpage
@@ -261,4 +260,3 @@
 \renewcommand*{\bibfont}{\zihao{5}\songti\setstretch{1.5}}
 \setlength{\bibitemsep}{3pt} % 条目间垂直间距，单位pt/mm/em
 \addbibresource{main/_back/ref.bib}
-\addbibresource{main/_back/ref2.bib}

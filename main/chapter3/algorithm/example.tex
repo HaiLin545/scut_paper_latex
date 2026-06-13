@@ -1,0 +1,18 @@
+\begin{algorithm}[htbp]
+    \begin{spacing}{1.4}
+    \caption{示例算法流程}
+    \label{alg:example}
+    \algsetup{linenosize=\normalsize}
+    \begin{algorithmic}[1]
+        \REQUIRE 输入数据 $\mathbf{x}$，超参数 $\alpha$
+        \ENSURE 输出结果 $\mathbf{y}$
+        \STATE 初始化模型参数 $\theta$
+        \FOR{$t = 1$ \TO $T$}
+            \STATE 计算损失 $\mathcal{L}(\mathbf{x}, \theta)$
+            \STATE 更新参数 $\theta \leftarrow \theta - \alpha \nabla_{\theta}\mathcal{L}$
+        \ENDFOR
+        \STATE $\mathbf{y} \leftarrow f_{\theta}(\mathbf{x})$
+        \STATE \textbf{返回} $\mathbf{y}$
+    \end{algorithmic}
+    \end{spacing}
+\end{algorithm}

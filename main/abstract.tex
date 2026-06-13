@@ -1,28 +1,23 @@
 % 中文摘要
-\chapter[摘要]{摘\quad 要} 
+\chapter[摘要]{摘\quad 要}
 \setlength{\parindent}{2em}
 
-人体重建与服装生成是构建高保真、可驱动的数字人化身的两大核心任务，前者旨在重建出几何一致且可灵活驱动的三维人体，后者则专注于生成结构准确且体型适配的三维服装。然而，当前主流方法在这两大任务中仍存在局限性。在人体重建方面，基于三维高斯溅射的重建方法存在高斯几何属性与人体网格拓扑缺乏显式关联的问题，这导致数字人在新姿态下容易出现表面破碎和偏移等几何失真现象。在服装生成方面，基于参数化表征的服装生成方法缺乏对人体真实尺度的显式参照，导致生成的服装尺寸与穿着者体型失配或存在结构错误。针对上述问题，本文以“几何先验”为共同思路，开展了以下研究工作。
+本文是一篇华南理工大学硕士学位论文 \LaTeX{} 模板示例。模板基于 \texttt{ctexbook} 开发，覆盖中文封面、英文封面、提名页、原创性声明、摘要、目录、正文、参考文献、研究成果与致谢等常用结构，并内置图表、公式、算法与参考文献的排版示例。
 
-在人体重建任务上，针对基于三维高斯溅射的人体重建方法在新姿态下的几何失真问题，本文提出了一种基于拓扑绑定的三维高斯人体重建方法。该方法以可变形的参数化人体网格为基础，设计了基于面片与顶点互补的双高斯表示结构。两类高斯基元分别以三角面片内切圆和网格顶点为锚点，从人体网格拓扑中解析式推导出其几何属性，从而有效缓解了新姿态下的几何不一致问题。同时，该方法引入等边正则化约束以维护网格质量，提高了人体动态重建过程的稳定性。在PeopleSnapshot与X-Avatar数据集上的实验结果表明，该方法在法向误差指标上与最优基线相比分别降低17.9\%和13.8\%。在X-Avatar数据集上，倒角距离降低15.9\%，同时模型大小降低44.5\%。
+请在本段替换为你的研究背景、问题定义、方法概述与主要结论。摘要应简明扼要地说明研究动机、核心思路、实验或应用结果，以及论文的主要贡献。建议中文摘要控制在 800--1000 字左右，并避免在此处展开过多技术细节。
 
-在服装生成任务上，针对基于参数化的服装生成方法存在服装尺寸与体型不匹配或结构错误的问题，本文提出了一种基于人体测量先验的参数化服装生成方法。该方法实现了传统量体工具对SMPL人体网格的拓扑适配，从而能够从单张图像中自动提取可解释的人体测量参数作为显式先验。为优化模型的生成效率，设计了面向大语言模型的参数重表示方案，对原始数字服装格式进行高度压缩。在此基础上，进一步构建了几何锚点归一化机制与分步推理工作流，有效引导多模态大语言模型在零样本条件下准确推理出服装设计参数。在CLoSe与4D-DRESS数据集上的实验表明，该方法生成的三维服装倒角距离分别为1.621 cm和1.834 cm，较最优基线降低19.5\%和6.2\%；同时，单图推理速度提升约4倍，Token消耗减少60\%，且最终生成的服装结构合法率达到100\%。
-
-\par \vspace{1em} % 空一行
-\noindent \textbf{关键词：}数字化身重建；三维高斯溅射；参数化服装生成；几何先验
+\par \vspace{1em}
+\noindent \textbf{关键词：}关键词一；关键词二；关键词三；关键词四
 
 
 % 英文摘要
 \chapter[Abstract]{Abstract}
-% \setlength{\parindent}{0em} % 英文摘要通常首行不缩进，段落间空行；若学校有格式要求可改为 2em
 
-Human reconstruction and garment generation are the two core tasks in constructing high-fidelity, drivable digital human avatars: the former aims to reconstruct geometrically consistent and flexibly drivable 3D human bodies, while the latter focuses on generating structurally accurate and body-shape-adaptive 3D garments. However, current mainstream methods still face inherent limitations in these two major tasks. In human reconstruction, 3D Gaussian Splatting-based reconstruction methods suffer from the issue of lacking an explicit correlation between Gaussian geometric attributes and human mesh topology, which makes digital humans prone to geometric distortions such as surface breakage and shifting under novel poses. In garment generation, parametric-representation-based garment generation methods lack explicit references to true human body scales, leading to size mismatches between the generated garments and the wearers' body shapes or structural errors. To address the above issues, this thesis adopts "geometric priors" as a common idea and carries out the following research work.
+This document serves as a \LaTeX{} template for SCUT master's theses. It provides commonly used front-matter and back-matter sections, including Chinese and English covers, the title page, originality declaration, abstract, table of contents, main chapters, bibliography, publications, and acknowledgements. Example environments for figures, tables, equations, algorithms, and citations are also included.
 
-For the human reconstruction task, targeting the geometric distortion problem in 3D Gaussian Splatting-based human reconstruction under novel poses, this thesis proposes a topology-bound 3D Gaussian human reconstruction method. Based on a deformable parametric human mesh, this method designs a dual-Gaussian representation structure consisting of complementary face and vertex Gaussians. These two types of Gaussian primitives are anchored at triangle incircles and mesh vertices, respectively, and their geometric attributes are analytically derived from the human mesh topology, thereby effectively alleviating geometric inconsistencies under novel poses. Meanwhile, this method introduces an equilateral regularization constraint to maintain mesh quality, improving the stability of the dynamic human reconstruction process. Experimental results on the PeopleSnapshot and X-Avatar datasets show that the proposed method reduces the normal error by 17.9\% and 13.8\%, respectively, compared to the strongest baseline. On the X-Avatar dataset, the Chamfer distance is reduced by 15.9\% while the model size is decreased by 44.5\%.
-
-For the garment generation task, targeting the issues of body-shape size mismatches and structural errors in parametric-representation-based garment generation methods, this thesis proposes a parametric garment generation method based on human measurement priors. To obtain accurate scale references, this method achieves topological adaptation of traditional measurement tools to the SMPL human mesh, enabling the automatic extraction of interpretable human measurement parameters from a single image as explicit priors. Meanwhile, to optimize the generation efficiency of the models, it designs a parameter re-representation scheme tailored for large language models to highly compress the original digital garment format. Building upon this, the method further constructs a geometric-anchor normalization mechanism and a stepwise inference workflow, effectively guiding a multimodal large language model to accurately infer garment design parameters under a zero-shot setting. Experiments on the CLoSe and 4D-DRESS datasets show that the 3D garments generated by this method achieve Chamfer distances of 1.621\,cm and 1.834\,cm, respectively, which are significantly reduced by 19.5\% and 6.2\% compared to the optimal baselines. Simultaneously, the single-image inference speed is improved by about 4$\times$, token consumption is reduced by 60\%, and the structural validity rate of the generated garments reaches 100\%.
+Replace this paragraph with your own research background, problem statement, method summary, and main findings. The abstract should briefly explain the motivation, key idea, experimental or application results, and major contributions of your thesis.
 
 \par \vspace{1em}
-\noindent \textbf{Keywords:} Digital Avatar Reconstruction; 3D Gaussian Splatting; Parametric Garment Generation; Geometric Priors
+\noindent \textbf{Keywords:} Keyword One; Keyword Two; Keyword Three; Keyword Four
 
-\setlength{\parindent}{2em} 
+\setlength{\parindent}{2em}
